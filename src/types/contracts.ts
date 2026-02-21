@@ -1,5 +1,5 @@
 export interface VaultPosition {
-  readonly yolks: bigint;
+  readonly shells: bigint;
   readonly eggBoost: bigint;
   readonly depositBlock: bigint;
   readonly cookLevel: number;
@@ -8,7 +8,7 @@ export interface VaultPosition {
 
 export interface VaultStats {
   readonly tvl: bigint;
-  readonly totalYolks: bigint;
+  readonly totalShells: bigint;
   readonly butterLevel: bigint;
   readonly sizzleRate: bigint;
 }

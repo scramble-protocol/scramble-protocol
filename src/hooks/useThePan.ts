@@ -59,7 +59,7 @@ export function useThePan(): ThePanState {
           if (mountedRef.current && posResult && !posResult.revert) {
             const props = posResult.properties as Record<string, bigint | number>;
             setPosition({
-              yolks: typeof props['yolks'] === 'bigint' ? props['yolks'] : 0n,
+              shells: typeof props['shells'] === 'bigint' ? props['shells'] : 0n,
               eggBoost: typeof props['eggBoost'] === 'bigint' ? props['eggBoost'] : 0n,
               depositBlock: typeof props['depositBlock'] === 'bigint' ? props['depositBlock'] : 0n,
               cookLevel: typeof props['cookLevel'] === 'number' ? props['cookLevel'] : 0,
@@ -74,7 +74,7 @@ export function useThePan(): ThePanState {
             const props = statsResult.properties as Record<string, bigint>;
             setStats({
               tvl: props['tvl'] ?? 0n,
-              totalYolks: props['totalYolks'] ?? 0n,
+              totalShells: props['totalShells'] ?? 0n,
               butterLevel: props['butterLevel'] ?? 0n,
               sizzleRate: props['sizzleRate'] ?? 0n,
             });

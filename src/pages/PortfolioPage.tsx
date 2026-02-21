@@ -50,14 +50,14 @@ function EarningsSummary({
 }
 
 function YieldBreakdown({
-  vaultYolks,
+  vaultShells,
   eggStaked,
   lpStaked,
   pendingSizzle,
   pendingStakingRewards,
   pendingFarmEgg,
 }: {
-  readonly vaultYolks: bigint;
+  readonly vaultShells: bigint;
   readonly eggStaked: bigint;
   readonly lpStaked: bigint;
   readonly pendingSizzle: bigint;
@@ -72,7 +72,7 @@ function YieldBreakdown({
           <div className="portfolio-page__yield-row">
             <span className="portfolio-page__yield-source">Spatula Farming (The Pan)</span>
             <div className="portfolio-page__yield-details">
-              <span>Yolks: {FormatService.formatBigIntWithDecimals(vaultYolks, TOKEN_DECIMALS, 4)}</span>
+              <span>Shell Token: {FormatService.formatBigIntWithDecimals(vaultShells, TOKEN_DECIMALS, 4)}</span>
               <span className="portfolio-page__yield-pending">
                 Pending Sizzle: {FormatService.formatBigIntWithDecimals(pendingSizzle, TOKEN_DECIMALS, 4)}
               </span>
@@ -182,7 +182,7 @@ function PortfolioPage(): React.ReactElement {
           farmingClaimed={0n}
         />
         <YieldBreakdown
-          vaultYolks={pan.position?.yolks ?? 0n}
+          vaultShells={pan.position?.shells ?? 0n}
           eggStaked={staking.position?.staked ?? 0n}
           lpStaked={farming.position?.staked ?? 0n}
           pendingSizzle={pan.position?.pendingSizzle ?? 0n}

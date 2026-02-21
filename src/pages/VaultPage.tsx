@@ -49,12 +49,12 @@ function VaultStatsSection({
           )}
         </div>
         <div className="vault-stats__box">
-          <p className="vault-stats__label">Total Yolks</p>
+          <p className="vault-stats__label">Total Shell Token</p>
           {isLoading ? (
             <div className="vault-stats__skeleton" />
           ) : (
             <p className="vault-stats__value">
-              {FormatService.formatBigIntWithDecimals(stats?.totalYolks ?? 0n, TOKEN_DECIMALS, 2)}
+              {FormatService.formatBigIntWithDecimals(stats?.totalShells ?? 0n, TOKEN_DECIMALS, 2)}
             </p>
           )}
         </div>
@@ -101,7 +101,7 @@ function DepositForm({
   }, [amount, onDeposit]);
 
   return (
-    <Card title="Deposit MOTO" subtitle="Deposit MOTO into The Pan to receive Yolks — your proportional share of the vault.">
+    <Card title="Deposit MOTO" subtitle="Deposit MOTO into The Pan to receive Shell Token — your proportional share of the vault.">
       <div className="deposit-form">
         <Input
           label="Amount"
@@ -153,25 +153,25 @@ function WithdrawForm({
 
   const handleMax = useCallback((): void => {
     if (position !== null) {
-      setShares(FormatService.formatTokenAmount(position.yolks, TOKEN_DECIMALS));
+      setShares(FormatService.formatTokenAmount(position.shells, TOKEN_DECIMALS));
     }
   }, [position]);
 
   return (
-    <Card title="Withdraw" subtitle="Return Yolks to withdraw MOTO. Yoke Tax applies based on blocks since deposit.">
+    <Card title="Withdraw" subtitle="Return Shell Token to withdraw MOTO. Yoke Tax applies based on blocks since deposit.">
       <div className="deposit-form">
         <div className="deposit-form__balance">
-          <span>Your Yolks</span>
+          <span>Your Shell Token</span>
           <span className="deposit-form__balance-value">
-            {FormatService.formatBigIntWithDecimals(position?.yolks ?? 0n, TOKEN_DECIMALS, 4)}
+            {FormatService.formatBigIntWithDecimals(position?.shells ?? 0n, TOKEN_DECIMALS, 4)}
           </span>
         </div>
         <Input
-          label="Yolks to withdraw"
+          label="Shell Token to withdraw"
           value={shares}
           onChange={setShares}
           placeholder="0.00"
-          suffix="Yolks"
+          suffix="SHELL"
           maxButton
           onMax={handleMax}
           type="text"

@@ -25,7 +25,7 @@ function SizzleClaim({
   }
 
   return (
-    <Card title="Sizzle Rewards" subtitle="Fees and yield stream to Yolk holders over ~1,008 blocks (~7 days) via the Sizzle drip." glow={hasSizzle ? 'sizzle' : 'none'}>
+    <Card title="Sizzle Rewards" subtitle="Fees and yield stream to Shell Token holders over ~1,008 blocks (~7 days) via the Sizzle drip." glow={hasSizzle ? 'sizzle' : 'none'}>
       <div className="sizzle-claim">
         <div className="sizzle-claim__reward">
           <p className="sizzle-claim__reward-label">Pending Rewards</p>

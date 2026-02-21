@@ -12,7 +12,7 @@ const STEPS: readonly Step[] = [
     icon: '\u{1F373}',
     title: 'Drop It In',
     description:
-      'Deposit MOTO into The Pan. You receive Yolks \u2014 your proportional share of the vault.',
+      'Deposit MOTO into The Pan. You receive Shell Token \u2014 your proportional share of the vault.',
   },
   {
     icon: '\u{1F525}',

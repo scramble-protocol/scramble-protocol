@@ -8,7 +8,7 @@ import '../../styles/components/withdraw-form.css';
 interface WithdrawFormProps {
   readonly onWithdraw: (shares: bigint) => Promise<void>;
   readonly txState: TransactionState;
-  readonly yolkBalance: bigint;
+  readonly shellBalance: bigint;
   readonly yokeTaxPercent: number;
   readonly isLoading: boolean;
 }
@@ -16,14 +16,14 @@ interface WithdrawFormProps {
 function WithdrawForm({
   onWithdraw,
   txState,
-  yolkBalance,
+  shellBalance,
   yokeTaxPercent,
   isLoading,
 }: WithdrawFormProps): ReactElement {
   const [amount, setAmount] = useState<string>('');
 
   const parsedAmount = FormatService.parseTokenAmount(amount, 8);
-  const formattedBalance = FormatService.formatTokenAmount(yolkBalance, 8);
+  const formattedBalance = FormatService.formatTokenAmount(shellBalance, 8);
 
   const taxAmount = parsedAmount * BigInt(Math.round(yokeTaxPercent * 100)) / 10000n;
   const netAmount = parsedAmount - taxAmount;
@@ -32,10 +32,10 @@ function WithdrawForm({
   const formattedNet = FormatService.formatTokenAmount(netAmount > 0n ? netAmount : 0n, 8);
 
   const isSubmitting = txState.status !== 'idle' && txState.status !== 'confirmed' && txState.status !== 'error';
-  const isDisabled = isLoading || isSubmitting || parsedAmount <= 0n || parsedAmount > yolkBalance;
+  const isDisabled = isLoading || isSubmitting || parsedAmount <= 0n || parsedAmount > shellBalance;
 
   function handleMaxClick(): void {
-    setAmount(FormatService.formatTokenAmount(yolkBalance, 8));
+    setAmount(FormatService.formatTokenAmount(shellBalance, 8));
   }
 
   function handleWithdraw(): void {
@@ -43,21 +43,21 @@ function WithdrawForm({
   }
 
   return (
-    <Card title="Withdraw" subtitle="Return Yolks to withdraw MOTO. Yoke Tax applies based on blocks since deposit.">
+    <Card title="Withdraw" subtitle="Return Shell Token to withdraw MOTO. Yoke Tax applies based on blocks since deposit.">
       <div className="withdraw-form">
         <div className="withdraw-form__balance">
-          <span>Your Yolks</span>
+          <span>Your Shell Token</span>
           <span className="withdraw-form__balance-value">
-            {formattedBalance} Yolks
+            {formattedBalance} SHELL
           </span>
         </div>
 
         <Input
-          label="Yolks to Withdraw"
+          label="Shell Token to Withdraw"
           placeholder="0.00"
           value={amount}
           onChange={setAmount}
-          suffix="Yolks"
+          suffix="SHELL"
           maxButton
           onMax={handleMaxClick}
           disabled={isLoading || isSubmitting}

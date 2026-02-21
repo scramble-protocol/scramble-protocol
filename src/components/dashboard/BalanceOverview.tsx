@@ -5,7 +5,7 @@ import '../../styles/components/balance-overview.css';
 interface BalanceOverviewProps {
   readonly motoBalance: bigint;
   readonly eggBalance: bigint;
-  readonly yolkBalance: bigint;
+  readonly shellBalance: bigint;
   readonly lpBalance: bigint;
   readonly isLoading: boolean;
 }
@@ -19,14 +19,14 @@ interface BalanceItem {
 function BalanceOverview({
   motoBalance,
   eggBalance,
-  yolkBalance,
+  shellBalance,
   lpBalance,
   isLoading,
 }: BalanceOverviewProps): ReactElement {
   const balances: ReadonlyArray<BalanceItem> = [
     { label: 'MOTO', value: motoBalance, variant: 'moto' },
     { label: '$EGG', value: eggBalance, variant: 'egg' },
-    { label: 'Yolks', value: yolkBalance, variant: 'butter' },
+    { label: 'Shell Token', value: shellBalance, variant: 'butter' },
     { label: '$EGG-MOTO LP', value: lpBalance, variant: 'accent' },
   ];
 

@@ -22,7 +22,7 @@ function DepositForm({
 
   const parsedAmount = FormatService.parseTokenAmount(amount, 8);
   const formattedBalance = FormatService.formatTokenAmount(motoBalance, 8);
-  const estimatedYolks =
+  const estimatedShells =
     amount.trim() !== ''
       ? FormatService.formatTokenAmount(parsedAmount, 8)
       : '0';
@@ -39,7 +39,7 @@ function DepositForm({
   }
 
   return (
-    <Card title="Deposit MOTO" subtitle="Deposit MOTO into The Pan to receive Yolks — your proportional share of the vault.">
+    <Card title="Deposit MOTO" subtitle="Deposit MOTO into The Pan to receive Shell Token — your proportional share of the vault.">
       <div className="deposit-form">
         <div className="deposit-form__balance">
           <span>Available Balance</span>
@@ -60,9 +60,9 @@ function DepositForm({
         />
 
         <div className="deposit-form__estimate">
-          <span className="deposit-form__estimate-label">Estimated Yolks</span>
+          <span className="deposit-form__estimate-label">Estimated Shell Token</span>
           <span className="deposit-form__estimate-value">
-            {estimatedYolks} Yolks
+            {estimatedShells} SHELL
           </span>
         </div>
 

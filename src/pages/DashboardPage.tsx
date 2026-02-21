@@ -50,7 +50,7 @@ function VaultPositionCard({
 }: {
   readonly position: VaultPosition | null;
 }): React.ReactElement {
-  const hasPosition = position !== null && position.yolks > 0n;
+  const hasPosition = position !== null && position.shells > 0n;
 
   return (
     <Card title="The Pan" glow={hasPosition ? 'egg' : 'none'}>
@@ -58,9 +58,9 @@ function VaultPositionCard({
         {hasPosition ? (
           <>
             <div className="dashboard-page__position-row">
-              <span className="dashboard-page__position-label">Yolks</span>
+              <span className="dashboard-page__position-label">Shell Token</span>
               <span className="dashboard-page__position-value">
-                {FormatService.formatBigIntWithDecimals(position.yolks, TOKEN_DECIMALS, 4)}
+                {FormatService.formatBigIntWithDecimals(position.shells, TOKEN_DECIMALS, 4)}
               </span>
             </div>
             <div className="dashboard-page__position-row">

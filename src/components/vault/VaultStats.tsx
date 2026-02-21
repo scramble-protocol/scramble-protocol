@@ -34,12 +34,12 @@ function VaultStatsComponent({
         </div>
 
         <div className="vault-stats__box">
-          <p className="vault-stats__label">Total Yolks</p>
+          <p className="vault-stats__label">Total Shell Token</p>
           {showSkeleton ? (
             <StatSkeleton />
           ) : (
             <p className="vault-stats__value">
-              {FormatService.formatTokenAmount(stats.totalYolks, 8)}
+              {FormatService.formatTokenAmount(stats.totalShells, 8)}
             </p>
           )}
         </div>

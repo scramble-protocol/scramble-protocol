@@ -27,7 +27,7 @@ const ENGINES: readonly YieldEngine[] = [
     duration: 'Permanent',
     durationVariant: 'permanent',
     description:
-      '5\u201315% additional APY from early withdrawal fees. Redistributed to remaining Yolk holders through the Sizzle drip.',
+      '5\u201315% additional APY from early withdrawal fees. Redistributed to remaining Shell Token holders through the Sizzle drip.',
   },
   {
     icon: '\u{1F95A}',

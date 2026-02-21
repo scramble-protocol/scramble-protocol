@@ -11,10 +11,10 @@ interface NavItem {
 }
 
 const NAV_ITEMS: readonly NavItem[] = [
-  { label: 'Vault', to: '/vault' },
-  { label: 'Stake', to: '/stake' },
-  { label: 'Farm', to: '/farm' },
-  { label: 'Harvest', to: '/harvest' },
+  { label: 'The Pan', to: '/vault' },
+  { label: 'Egg Staking', to: '/stake' },
+  { label: 'LP Mining', to: '/farm' },
+  { label: 'The Flip', to: '/harvest' },
   { label: 'Dashboard', to: '/dashboard' },
 ] as const;
 
@@ -46,7 +46,7 @@ function Header(): ReactElement {
     <header className="header">
       <div className="header__inner">
         <Link to="/" className="header__logo">
-          Scramble
+          Scramble 🍳
         </Link>
 
         <nav className="header__nav">
