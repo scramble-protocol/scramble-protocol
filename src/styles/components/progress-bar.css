@@ -1,0 +1,65 @@
+/* ============================================
+   ProgressBar Component
+   BEM naming: .progress, .progress__track, etc.
+   ============================================ */
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: 100%;
+}
+
+/* ---- Label ---- */
+
+.progress__label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ---- Track ---- */
+
+.progress__track {
+  width: 100%;
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress__track--sm {
+  height: 6px;
+}
+
+.progress__track--md {
+  height: 10px;
+}
+
+/* ---- Fill ---- */
+
+.progress__fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width var(--transition-normal);
+  min-width: 0;
+}
+
+/* ---- Variant colors ---- */
+
+.progress__fill--accent {
+  background-color: var(--color-accent);
+}
+
+.progress__fill--egg {
+  background-color: var(--color-egg);
+}
+
+.progress__fill--sizzle {
+  background-color: var(--color-sizzle);
+}
+
+.progress__fill--moto {
+  background-color: var(--color-moto);
+}

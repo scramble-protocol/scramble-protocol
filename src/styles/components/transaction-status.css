@@ -1,0 +1,64 @@
+/* ============================================
+   TransactionStatus Component
+   Inline status display for TX lifecycle
+   ============================================ */
+
+.tx-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ---- Confirmed state ---- */
+
+.tx-status--confirmed {
+  color: var(--color-success);
+}
+
+.tx-status__check-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background-color: rgba(34, 197, 94, 0.15);
+  color: var(--color-success);
+  font-size: var(--text-xs);
+  flex-shrink: 0;
+}
+
+/* ---- Error state ---- */
+
+.tx-status--error {
+  color: var(--color-error);
+}
+
+.tx-status__error-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background-color: rgba(239, 68, 68, 0.15);
+  color: var(--color-error);
+  font-size: var(--text-xs);
+  flex-shrink: 0;
+}
+
+/* ---- Link to explorer ---- */
+
+.tx-status__link {
+  color: var(--color-accent);
+  text-decoration: none;
+  font-size: var(--text-xs);
+  transition: color var(--transition-fast);
+}
+
+.tx-status__link:hover {
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+}

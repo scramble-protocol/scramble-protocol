@@ -1,0 +1,97 @@
+/* ============================================
+   Stake Page Layout
+   BEM naming: .stake-page, .stake-page__*
+   ============================================ */
+
+.stake-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-6) 0;
+}
+
+/* ---- Stats section (full width) ---- */
+
+.stake-page__stats {
+  width: 100%;
+}
+
+/* ---- Two-column grid ---- */
+
+.stake-page__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .stake-page__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ---- Columns ---- */
+
+.stake-page__left-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.stake-page__right-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* ---- Rewards section ---- */
+
+.stake-page__rewards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.stake-page__reward-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3);
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.stake-page__reward-label {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.stake-page__reward-value {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--color-sizzle);
+}
+
+/* ---- Connect prompt ---- */
+
+.stake-page__connect-prompt {
+  width: 100%;
+  max-width: var(--max-width-sm);
+  margin: 0 auto;
+  padding: var(--space-8) 0;
+}
+
+.stake-page__connect-text {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-4) 0;
+}
+
+/* ---- Loading state ---- */
+
+.stake-page__loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}

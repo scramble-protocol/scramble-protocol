@@ -1,0 +1,55 @@
+import { defineConfig } from 'vite';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
+import react from '@vitejs/plugin-react';
+import eslint from 'vite-plugin-eslint2';
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [
+    nodePolyfills({
+      include: ['buffer', 'process', 'crypto', 'stream'],
+      globals: {
+        Buffer: true,
+        global: true,
+        process: true,
+      },
+      overrides: {
+        crypto: 'crypto-browserify',
+        stream: 'stream-browserify',
+      },
+    }),
+    react(),
+    eslint({
+      lintOnStart: true,
+      cache: false,
+    }),
+  ],
+
+  resolve: {
+    alias: {
+      undici: '',
+    },
+    dedupe: [
+      'react',
+      'react-dom',
+      '@noble/hashes',
+      '@noble/curves',
+      '@scure/base',
+    ],
+  },
+
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          opnet: [
+            'opnet',
+            '@btc-vision/bitcoin',
+            '@btc-vision/transaction',
+          ],
+        },
+      },
+    },
+  },
+});

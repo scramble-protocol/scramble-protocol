@@ -1,0 +1,164 @@
+/* ============================================
+   WalletButton — Connect / Connected states
+   ============================================ */
+
+.wallet-button {
+  position: relative;
+}
+
+/* ---- Connect button (disconnected) ---- */
+
+.wallet-button__connect {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-accent);
+  color: var(--color-bg-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition: background var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.wallet-button__connect:hover {
+  background: var(--color-accent-hover);
+  box-shadow: var(--shadow-md);
+}
+
+/* ---- Connected trigger ---- */
+
+.wallet-button__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.wallet-button__trigger:hover {
+  background: var(--color-bg-tertiary);
+  border-color: var(--color-accent);
+}
+
+.wallet-button__address {
+  font-family: monospace;
+  font-size: var(--text-sm);
+}
+
+.wallet-button__network-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-bg-tertiary);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  text-transform: capitalize;
+}
+
+/* ---- Dropdown ---- */
+
+.wallet-button__dropdown {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  min-width: 260px;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-4);
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ---- Dropdown sections ---- */
+
+.wallet-button__dropdown-label {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.wallet-button__full-address {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  font-family: monospace;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  word-break: break-all;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.wallet-button__full-address:hover {
+  border-color: var(--color-accent);
+}
+
+.wallet-button__copy-hint {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.wallet-button__balance-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) 0;
+}
+
+.wallet-button__balance-label {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.wallet-button__balance-value {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  font-family: monospace;
+}
+
+.wallet-button__divider {
+  height: 1px;
+  background: var(--color-border-subtle);
+}
+
+.wallet-button__disconnect {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  border: 1px solid var(--color-sizzle);
+  border-radius: var(--radius-md);
+  color: var(--color-sizzle);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.wallet-button__disconnect:hover {
+  background: var(--color-sizzle);
+  color: var(--color-text-primary);
+}

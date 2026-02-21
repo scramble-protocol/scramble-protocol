@@ -1,0 +1,130 @@
+/* ============================================
+   Flywheel Section
+   BEM naming: .flywheel, .flywheel__*
+   ============================================ */
+
+.flywheel {
+  padding: var(--space-13) var(--space-6);
+  background-color: var(--color-bg-secondary);
+}
+
+.flywheel__inner {
+  max-width: var(--max-width-xl);
+  margin: 0 auto;
+}
+
+/* ---- Section heading ---- */
+
+.flywheel__heading {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  text-align: center;
+  margin: 0 0 var(--space-10) 0;
+}
+
+/* ---- Flow container ---- */
+
+.flywheel__flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+@media (min-width: 768px) {
+  .flywheel__flow {
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+}
+
+/* ---- Node card ---- */
+
+.flywheel__node {
+  background-color: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  text-align: center;
+  min-width: 140px;
+  transition: box-shadow var(--transition-normal),
+              border-color var(--transition-normal);
+}
+
+.flywheel__node:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-glow-egg);
+}
+
+/* ---- Node icon ---- */
+
+.flywheel__node-icon {
+  font-size: var(--text-2xl);
+  display: block;
+  margin-bottom: var(--space-2);
+}
+
+/* ---- Node label ---- */
+
+.flywheel__node-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: var(--leading-tight);
+}
+
+/* ---- Arrow between nodes ---- */
+
+.flywheel__arrow {
+  color: var(--color-accent);
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  line-height: 1;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Vertical on mobile */
+  transform: rotate(90deg);
+}
+
+@media (min-width: 768px) {
+  .flywheel__arrow {
+    transform: rotate(0deg);
+  }
+}
+
+/* ---- Repeat indicator ---- */
+
+.flywheel__repeat {
+  margin-top: var(--space-6);
+  text-align: center;
+}
+
+.flywheel__repeat-text {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+.flywheel__repeat-icon {
+  font-size: var(--text-2xl);
+  color: var(--color-accent);
+  display: block;
+  margin-bottom: var(--space-2);
+  animation: flywheelSpin 3s linear infinite;
+}
+
+@keyframes flywheelSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

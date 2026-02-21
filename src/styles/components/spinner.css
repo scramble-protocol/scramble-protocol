@@ -1,0 +1,44 @@
+/* ============================================
+   Spinner Component
+   Pure CSS spinning arc
+   ============================================ */
+
+.spinner {
+  display: inline-block;
+  border-style: solid;
+  border-color: var(--color-bg-tertiary);
+  border-top-color: var(--color-accent);
+  border-radius: var(--radius-full);
+  animation: spinnerRotate 0.65s linear infinite;
+}
+
+/* ---- Sizes ---- */
+
+.spinner--sm {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+
+.spinner--md {
+  width: 24px;
+  height: 24px;
+  border-width: 3px;
+}
+
+.spinner--lg {
+  width: 40px;
+  height: 40px;
+  border-width: 4px;
+}
+
+/* ---- Animation ---- */
+
+@keyframes spinnerRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

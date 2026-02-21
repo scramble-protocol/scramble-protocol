@@ -1,0 +1,49 @@
+/* ============================================
+   StakingRewards Component
+   BEM naming: .staking-rewards, .staking-rewards__*, etc.
+   ============================================ */
+
+.staking-rewards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ---- Reward display ---- */
+
+.staking-rewards__reward {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  text-align: center;
+}
+
+.staking-rewards__reward-label {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.staking-rewards__reward-amount {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: var(--color-moto);
+  margin: 0;
+  line-height: var(--leading-tight);
+}
+
+.staking-rewards__reward-token {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* ---- Actions ---- */
+
+.staking-rewards__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}

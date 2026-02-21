@@ -1,0 +1,48 @@
+/* ============================================
+   Farm Rewards Component
+   BEM naming: .farm-rewards, .farm-rewards__*, etc.
+   ============================================ */
+
+.farm-rewards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ---- Pending display ---- */
+
+.farm-rewards__pending {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4) 0;
+}
+
+.farm-rewards__pending-label {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.farm-rewards__pending-amount {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: var(--color-egg);
+  margin: 0;
+}
+
+.farm-rewards__pending-token {
+  font-size: var(--text-lg);
+  color: var(--color-egg);
+  font-weight: var(--font-medium);
+  margin: 0;
+}
+
+/* ---- Actions ---- */
+
+.farm-rewards__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}

@@ -1,0 +1,65 @@
+/* ============================================
+   Protocol Stats Component
+   BEM naming: .protocol-stats, .protocol-stats__*, etc.
+   ============================================ */
+
+.protocol-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+}
+
+@media (max-width: 700px) {
+  .protocol-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Stat box ---- */
+
+.protocol-stats__box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.protocol-stats__box-label {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.protocol-stats__box-value {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* ---- Skeleton ---- */
+
+.protocol-stats__skeleton {
+  height: var(--text-2xl);
+  width: 60%;
+  margin: 0 auto;
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--radius-sm);
+  animation: protocol-stats-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes protocol-stats-pulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}

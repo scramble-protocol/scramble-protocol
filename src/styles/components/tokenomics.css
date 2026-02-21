@@ -1,0 +1,137 @@
+/* ============================================
+   Tokenomics Section
+   BEM naming: .tokenomics, .tokenomics__*
+   ============================================ */
+
+.tokenomics {
+  padding: var(--space-13) var(--space-6);
+  background-color: var(--color-bg-primary);
+}
+
+.tokenomics__inner {
+  max-width: var(--max-width-lg);
+  margin: 0 auto;
+}
+
+/* ---- Section heading ---- */
+
+.tokenomics__heading {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  text-align: center;
+  margin: 0 0 var(--space-3) 0;
+}
+
+/* ---- Total supply subtext ---- */
+
+.tokenomics__supply {
+  font-size: var(--text-lg);
+  color: var(--color-text-secondary);
+  text-align: center;
+  margin: 0 0 var(--space-10) 0;
+}
+
+.tokenomics__supply-value {
+  color: var(--color-egg);
+  font-weight: var(--font-semibold);
+}
+
+/* ---- Allocation list ---- */
+
+.tokenomics__allocations {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* ---- Single allocation row ---- */
+
+.tokenomics__row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* ---- Row header (label + percentage) ---- */
+
+.tokenomics__row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.tokenomics__label {
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.tokenomics__percentage {
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+  margin: 0;
+}
+
+/* ---- Bar track ---- */
+
+.tokenomics__bar-track {
+  width: 100%;
+  height: 12px;
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+/* ---- Bar fill ---- */
+
+.tokenomics__bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width var(--transition-slow);
+}
+
+/* ---- Color variants for bars ---- */
+
+.tokenomics__bar-fill--vault {
+  background-color: var(--color-egg);
+}
+
+.tokenomics__bar-fill--lp {
+  background-color: var(--color-moto);
+}
+
+.tokenomics__bar-fill--mint {
+  background-color: var(--color-success);
+}
+
+.tokenomics__bar-fill--staking {
+  background-color: var(--color-sizzle);
+}
+
+.tokenomics__bar-fill--reserve {
+  background-color: var(--color-text-muted);
+}
+
+/* ---- Color variants for percentage text ---- */
+
+.tokenomics__percentage--vault {
+  color: var(--color-egg);
+}
+
+.tokenomics__percentage--lp {
+  color: var(--color-moto);
+}
+
+.tokenomics__percentage--mint {
+  color: var(--color-success);
+}
+
+.tokenomics__percentage--staking {
+  color: var(--color-sizzle);
+}
+
+.tokenomics__percentage--reserve {
+  color: var(--color-text-muted);
+}

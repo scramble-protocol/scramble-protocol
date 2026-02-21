@@ -1,0 +1,163 @@
+/* ============================================
+   Vault Page Layout (The Pan)
+   BEM naming: .vault-page, .vault-page__*
+   ============================================ */
+
+.vault-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-6) 0;
+}
+
+/* ---- Stats section (full width) ---- */
+
+.vault-page__stats {
+  width: 100%;
+}
+
+/* ---- Two-column grid ---- */
+
+.vault-page__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .vault-page__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ---- Columns ---- */
+
+.vault-page__left-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.vault-page__right-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* ---- Sizzle claim ---- */
+
+.vault-page__sizzle-claim {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ---- Reward display rows ---- */
+
+.vault-page__reward-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-2) 0;
+}
+
+.vault-page__reward-label {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.vault-page__reward-value {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+}
+
+.vault-page__reward-value--sizzle {
+  color: var(--color-sizzle);
+}
+
+.vault-page__reward-value--egg {
+  color: var(--color-egg);
+}
+
+/* ---- EGG Boost section ---- */
+
+.vault-page__egg-boost {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.vault-page__boost-actions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.vault-page__boost-actions > * {
+  flex: 1;
+}
+
+/* ---- Cook Level display ---- */
+
+.vault-page__cook-level {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.vault-page__cook-level-badge {
+  display: flex;
+  justify-content: center;
+}
+
+.vault-page__cook-level-name {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.vault-page__cook-level-detail {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.vault-page__cook-level-label {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.vault-page__cook-level-value {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+}
+
+/* ---- Connect prompt ---- */
+
+.vault-page__connect-prompt {
+  width: 100%;
+  max-width: var(--max-width-sm);
+  margin: 0 auto;
+  padding: var(--space-8) 0;
+}
+
+.vault-page__connect-text {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-4) 0;
+}
+
+/* ---- Loading state ---- */
+
+.vault-page__loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}

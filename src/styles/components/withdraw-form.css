@@ -1,0 +1,78 @@
+/* ============================================
+   WithdrawForm Component
+   BEM naming: .withdraw-form, .withdraw-form__*, etc.
+   ============================================ */
+
+.withdraw-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ---- Balance display ---- */
+
+.withdraw-form__balance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.withdraw-form__balance-value {
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+}
+
+/* ---- Shell Tax preview ---- */
+
+.withdraw-form__tax-preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.withdraw-form__tax-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+}
+
+.withdraw-form__tax-label {
+  color: var(--color-text-secondary);
+}
+
+.withdraw-form__tax-value {
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+}
+
+.withdraw-form__tax-value--warning {
+  color: var(--color-warning);
+}
+
+.withdraw-form__tax-value--success {
+  color: var(--color-success);
+}
+
+/* ---- Divider ---- */
+
+.withdraw-form__divider {
+  height: 1px;
+  background-color: var(--color-border);
+  border: none;
+  margin: 0;
+}
+
+/* ---- Actions ---- */
+
+.withdraw-form__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
