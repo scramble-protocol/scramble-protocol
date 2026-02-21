@@ -101,3 +101,35 @@
 .animate-spin {
   animation: spin 1s linear infinite;
 }
+
+/* ---- Scroll reveal ---- */
+
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(48px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.scroll-reveal--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger children inside sections for a cascading feel */
+.scroll-reveal:nth-child(2) { transition-delay: 0.06s; }
+.scroll-reveal:nth-child(3) { transition-delay: 0.12s; }
+.scroll-reveal:nth-child(4) { transition-delay: 0.18s; }
+.scroll-reveal:nth-child(5) { transition-delay: 0.24s; }
+.scroll-reveal:nth-child(6) { transition-delay: 0.30s; }
+.scroll-reveal:nth-child(7) { transition-delay: 0.36s; }
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

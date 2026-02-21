@@ -18,13 +18,13 @@ const STEPS: readonly Step[] = [
     icon: '\u{1F525}',
     title: 'Let It Cook',
     description:
-      'The longer you stay, the lower your Shell Tax. Your Cook Level rises from Raw Egg to Fully Scrambled, boosting rewards up to 2x.',
+      'The longer you stay, the lower your Yoke Tax. Your Cook Level rises from Raw Egg to Fully Scrambled, boosting rewards up to 2x.',
   },
   {
     icon: '\u{1F37D}\uFE0F',
     title: 'Get Your Plate',
     description:
-      'Withdraw your MOTO plus earned Sizzle rewards. Three yield engines work for you: Spatula farming, Shell Tax redistribution, and $EGG emissions.',
+      'Withdraw your MOTO plus earned Sizzle rewards. Three yield engines work for you: Spatula farming, Yoke Tax redistribution, and $EGG emissions.',
   },
 ] as const;
 

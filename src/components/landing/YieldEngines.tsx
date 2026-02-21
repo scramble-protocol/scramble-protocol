@@ -23,7 +23,7 @@ const ENGINES: readonly YieldEngine[] = [
   {
     icon: '\u{1F41A}',
     iconVariant: 'shell',
-    title: 'Shell Tax',
+    title: 'Yoke Tax',
     duration: 'Permanent',
     durationVariant: 'permanent',
     description:

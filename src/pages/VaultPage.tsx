@@ -8,7 +8,7 @@ import '../styles/components/vault-page.css';
 
 const TOKEN_DECIMALS = 8;
 
-function calculateShellTaxPercent(
+function calculateYokeTaxPercent(
   depositBlock: bigint,
   currentBlock: bigint,
 ): number {
@@ -139,8 +139,8 @@ function WithdrawForm({
 }): React.ReactElement {
   const [shares, setShares] = useState<string>('');
 
-  const shellTax = position !== null
-    ? calculateShellTaxPercent(position.depositBlock, currentBlock)
+  const yokeTax = position !== null
+    ? calculateYokeTaxPercent(position.depositBlock, currentBlock)
     : 30;
 
   const handleWithdraw = useCallback((): void => {
@@ -158,7 +158,7 @@ function WithdrawForm({
   }, [position]);
 
   return (
-    <Card title="Withdraw" subtitle="Return Yolks to withdraw MOTO. Shell Tax applies based on blocks since deposit.">
+    <Card title="Withdraw" subtitle="Return Yolks to withdraw MOTO. Yoke Tax applies based on blocks since deposit.">
       <div className="deposit-form">
         <div className="deposit-form__balance">
           <span>Your Yolks</span>
@@ -177,8 +177,8 @@ function WithdrawForm({
           type="text"
         />
         <div className="deposit-form__estimate">
-          <span className="deposit-form__estimate-label">Shell Tax</span>
-          <span className="deposit-form__estimate-value">{String(shellTax)}%</span>
+          <span className="deposit-form__estimate-label">Yoke Tax</span>
+          <span className="deposit-form__estimate-value">{String(yokeTax)}%</span>
         </div>
         <div className="deposit-form__actions">
           <Button

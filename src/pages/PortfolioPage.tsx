@@ -28,7 +28,7 @@ function EarningsSummary({
             <span className="portfolio-page__earning-label">Total Sizzle claimed from The Pan</span>
           </div>
         </Card>
-        <Card title="Shell Tax Redistribution">
+        <Card title="Yoke Tax Redistribution">
           <div className="portfolio-page__earning-card">
             <span className="portfolio-page__earning-value portfolio-page__earning-value--egg">
               {FormatService.formatBigIntWithDecimals(stakingClaimed, TOKEN_DECIMALS, 4)} MOTO
@@ -80,7 +80,7 @@ function YieldBreakdown({
           </div>
           <div className="portfolio-page__yield-divider" />
           <div className="portfolio-page__yield-row">
-            <span className="portfolio-page__yield-source">Shell Tax Redistribution ($EGG Staking)</span>
+            <span className="portfolio-page__yield-source">Yoke Tax Redistribution ($EGG Staking)</span>
             <div className="portfolio-page__yield-details">
               <span>Staked: {FormatService.formatBigIntWithDecimals(eggStaked, TOKEN_DECIMALS, 4)} EGG</span>
               <span className="portfolio-page__yield-pending">

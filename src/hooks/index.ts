@@ -11,3 +11,4 @@ export { useEggStaking } from './useEggStaking.js';
 export { useLPMining } from './useLPMining.js';
 export { useSpatula } from './useSpatula.js';
 export { useAddressValidation } from './useAddressValidation.js';
+export { useHeroParallax, useScrollReveal } from './useScrollEffects.js';

@@ -9,7 +9,7 @@ interface WithdrawFormProps {
   readonly onWithdraw: (shares: bigint) => Promise<void>;
   readonly txState: TransactionState;
   readonly yolkBalance: bigint;
-  readonly shellTaxPercent: number;
+  readonly yokeTaxPercent: number;
   readonly isLoading: boolean;
 }
 
@@ -17,7 +17,7 @@ function WithdrawForm({
   onWithdraw,
   txState,
   yolkBalance,
-  shellTaxPercent,
+  yokeTaxPercent,
   isLoading,
 }: WithdrawFormProps): ReactElement {
   const [amount, setAmount] = useState<string>('');
@@ -25,7 +25,7 @@ function WithdrawForm({
   const parsedAmount = FormatService.parseTokenAmount(amount, 8);
   const formattedBalance = FormatService.formatTokenAmount(yolkBalance, 8);
 
-  const taxAmount = parsedAmount * BigInt(Math.round(shellTaxPercent * 100)) / 10000n;
+  const taxAmount = parsedAmount * BigInt(Math.round(yokeTaxPercent * 100)) / 10000n;
   const netAmount = parsedAmount - taxAmount;
 
   const formattedTax = FormatService.formatTokenAmount(taxAmount, 8);
@@ -43,7 +43,7 @@ function WithdrawForm({
   }
 
   return (
-    <Card title="Withdraw" subtitle="Return Yolks to withdraw MOTO. Shell Tax applies based on blocks since deposit.">
+    <Card title="Withdraw" subtitle="Return Yolks to withdraw MOTO. Yoke Tax applies based on blocks since deposit.">
       <div className="withdraw-form">
         <div className="withdraw-form__balance">
           <span>Your Yolks</span>
@@ -65,9 +65,9 @@ function WithdrawForm({
 
         <div className="withdraw-form__tax-preview">
           <div className="withdraw-form__tax-row">
-            <span className="withdraw-form__tax-label">Shell Tax</span>
+            <span className="withdraw-form__tax-label">Yoke Tax</span>
             <span className="withdraw-form__tax-value withdraw-form__tax-value--warning">
-              {String(shellTaxPercent)}% ({formattedTax} MOTO)
+              {String(yokeTaxPercent)}% ({formattedTax} MOTO)
             </span>
           </div>
           <hr className="withdraw-form__divider" />

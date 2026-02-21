@@ -1,6 +1,6 @@
 export { Hero } from './Hero.js';
 export { HowItWorks } from './HowItWorks.js';
-export { ShellTaxTiers } from './ShellTaxTiers.js';
+export { YokeTaxTiers } from './YokeTaxTiers.js';
 export { YieldEngines } from './YieldEngines.js';
 export { CookLevels } from './CookLevels.js';
 export { Tokenomics } from './Tokenomics.js';

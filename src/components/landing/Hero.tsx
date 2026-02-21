@@ -2,9 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import '../../styles/components/hero.css';
 
-function Hero(): React.ReactElement {
+interface HeroProps {
+  readonly parallaxRef?: React.RefObject<HTMLElement | null>;
+}
+
+function Hero({ parallaxRef }: HeroProps): React.ReactElement {
   return (
-    <section className="hero">
+    <section className="hero" ref={parallaxRef}>
       <div className="hero__glow" aria-hidden="true" />
       <div className="hero__content">
         <h1 className="hero__heading">Get Cracked. Get Cooked. Get Scrambled.</h1>

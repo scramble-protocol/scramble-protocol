@@ -9,7 +9,7 @@ interface FlywheelNode {
 const NODES: readonly FlywheelNode[] = [
   { icon: '\u{1F4B0}', label: 'Deposit MOTO into The Pan' },
   { icon: '\u{1F944}', label: 'Spatula farms MotoChef yield' },
-  { icon: '\u{1F525}', label: 'Yield + Shell Tax enter Sizzle drip' },
+  { icon: '\u{1F525}', label: 'Yield + Yoke Tax enter Sizzle drip' },
   { icon: '\u{1F4C8}', label: 'High APY attracts new deposits' },
   { icon: '\u{23F3}', label: 'Cook Level keeps users staked longer' },
   { icon: '\u{2B06}\uFE0F', label: 'Bigger Pan = more Spatula yield' },

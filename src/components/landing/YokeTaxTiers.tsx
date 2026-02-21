@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../styles/components/shell-tax-tiers.css';
+import '../../styles/components/yoke-tax-tiers.css';
 
 interface TaxTier {
   readonly rate: string;
@@ -14,30 +14,30 @@ const TIERS: readonly TaxTier[] = [
   { rate: '5%', blocks: 'Golden Egg: 25,920+ blocks (~6+ months)', severity: 'low' },
 ] as const;
 
-function ShellTaxTiers(): React.ReactElement {
+function YokeTaxTiers(): React.ReactElement {
   return (
-    <section className="shell-tax">
-      <div className="shell-tax__inner">
-        <h2 className="shell-tax__heading">Shell Tax &mdash; Patience Pays</h2>
-        <p className="shell-tax__explanation">
-          Early withdrawal means higher tax. The Shell Tax is redistributed to
+    <section className="yoke-tax">
+      <div className="yoke-tax__inner">
+        <h2 className="yoke-tax__heading">Yoke Tax &mdash; Patience Pays</h2>
+        <p className="yoke-tax__explanation">
+          Early withdrawal means higher tax. The Yoke Tax is redistributed to
           loyal depositors through the Sizzle drip. The Golden Egg tier gives
           long-term holders a near-clean exit.
         </p>
-        <div className="shell-tax__timeline">
+        <div className="yoke-tax__timeline">
           {TIERS.map((tier: TaxTier): React.ReactElement => (
-            <div key={tier.rate} className="shell-tax__tier">
+            <div key={tier.rate} className="yoke-tax__tier">
               <div
-                className={`shell-tax__dot shell-tax__dot--${tier.severity}`}
+                className={`yoke-tax__dot yoke-tax__dot--${tier.severity}`}
                 aria-hidden="true"
               />
-              <div className="shell-tax__tier-info">
+              <div className="yoke-tax__tier-info">
                 <p
-                  className={`shell-tax__tier-rate shell-tax__tier-rate--${tier.severity}`}
+                  className={`yoke-tax__tier-rate yoke-tax__tier-rate--${tier.severity}`}
                 >
                   {tier.rate}
                 </p>
-                <p className="shell-tax__tier-blocks">{tier.blocks}</p>
+                <p className="yoke-tax__tier-blocks">{tier.blocks}</p>
               </div>
             </div>
           ))}
@@ -47,4 +47,4 @@ function ShellTaxTiers(): React.ReactElement {
   );
 }
 
-export { ShellTaxTiers };
+export { YokeTaxTiers };
