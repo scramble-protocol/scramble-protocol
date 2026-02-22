@@ -19,7 +19,7 @@ function Hero({ parallaxRef }: HeroProps): React.ReactElement {
         </p>
         <div className="hero__cta-row">
           <Link to="/vault" className="hero__cta hero__cta--primary">
-            Launch App
+            Start Cooking
           </Link>
           <Link to="/mint" className="hero__cta hero__cta--secondary">
             Free Mint
