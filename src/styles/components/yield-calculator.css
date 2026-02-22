@@ -1,0 +1,303 @@
+/* ============================================
+   Yield Calculator Section
+   BEM naming: .yield-calc, .yield-calc__*
+   ============================================ */
+
+.yield-calc {
+  padding: var(--space-13) var(--space-6);
+  background-color: var(--color-bg-secondary);
+}
+
+.yield-calc__inner {
+  max-width: var(--max-width-xl);
+  margin: 0 auto;
+}
+
+/* ---- Section heading ---- */
+
+.yield-calc__heading {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  text-align: center;
+  margin: 0 0 var(--space-3) 0;
+}
+
+.yield-calc__subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  text-align: center;
+  margin: 0 0 var(--space-10) 0;
+  line-height: var(--leading-normal);
+}
+
+/* ---- Two-column grid ---- */
+
+.yield-calc__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-7);
+}
+
+@media (min-width: 768px) {
+  .yield-calc__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-9);
+  }
+}
+
+/* ---- Inputs panel ---- */
+
+.yield-calc__inputs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.yield-calc__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.yield-calc__field--row {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.yield-calc__label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-secondary);
+}
+
+/* ---- Text input with suffix ---- */
+
+.yield-calc__input-wrap {
+  display: flex;
+  align-items: center;
+  background-color: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color var(--transition-fast);
+}
+
+.yield-calc__input-wrap:focus-within {
+  border-color: var(--color-accent);
+}
+
+.yield-calc__input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-text-primary);
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  padding: var(--space-3) var(--space-4);
+  min-width: 0;
+}
+
+.yield-calc__suffix {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-muted);
+  background-color: var(--color-bg-elevated);
+  white-space: nowrap;
+}
+
+/* ---- Time preset buttons ---- */
+
+.yield-calc__presets {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.yield-calc__preset {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-fast),
+              color var(--transition-fast),
+              border-color var(--transition-fast);
+}
+
+.yield-calc__preset:hover {
+  border-color: var(--color-accent);
+  color: var(--color-text-primary);
+}
+
+.yield-calc__preset--active {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-bg-primary);
+  font-weight: var(--font-semibold);
+}
+
+/* ---- Toggle switch ---- */
+
+.yield-calc__toggle {
+  position: relative;
+  width: 48px;
+  height: 26px;
+  border: none;
+  border-radius: var(--radius-full);
+  background-color: var(--color-bg-elevated);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background-color var(--transition-fast);
+}
+
+.yield-calc__toggle--on {
+  background-color: var(--color-accent);
+}
+
+.yield-calc__toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-text-primary);
+  transition: transform var(--transition-fast);
+}
+
+.yield-calc__toggle--on .yield-calc__toggle-thumb {
+  transform: translateX(22px);
+}
+
+/* ---- Range slider ---- */
+
+.yield-calc__slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-elevated);
+  outline: none;
+  cursor: pointer;
+}
+
+.yield-calc__slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  cursor: pointer;
+  border: 2px solid var(--color-bg-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.yield-calc__slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  cursor: pointer;
+  border: 2px solid var(--color-bg-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.yield-calc__slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-top: var(--space-1);
+}
+
+/* ---- Outputs panel ---- */
+
+.yield-calc__outputs {
+  background-color: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-7);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.yield-calc__result {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.yield-calc__result--highlight {
+  padding: var(--space-3) 0;
+}
+
+.yield-calc__result--final {
+  padding: var(--space-3) 0;
+}
+
+.yield-calc__result-label {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.yield-calc__result-value {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+}
+
+.yield-calc__result-value--large {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+}
+
+.yield-calc__result-value--accent {
+  color: var(--color-accent);
+}
+
+.yield-calc__result-value--warning {
+  color: var(--color-sizzle);
+}
+
+.yield-calc__result-value--egg {
+  color: var(--color-egg);
+}
+
+/* ---- Divider ---- */
+
+.yield-calc__divider {
+  height: 1px;
+  background-color: var(--color-border);
+  margin: var(--space-2) 0;
+}
+
+/* ---- Breakdown heading ---- */
+
+.yield-calc__breakdown-heading {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+/* ---- Disclaimer ---- */
+
+.yield-calc__disclaimer {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  line-height: var(--leading-normal);
+  margin: var(--space-2) 0 0 0;
+}

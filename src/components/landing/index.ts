@@ -2,6 +2,7 @@ export { Hero } from './Hero.js';
 export { HowItWorks } from './HowItWorks.js';
 export { YokeTaxTiers } from './YokeTaxTiers.js';
 export { YieldEngines } from './YieldEngines.js';
+export { YieldCalculator } from './YieldCalculator.js';
 export { CookLevels } from './CookLevels.js';
 export { Tokenomics } from './Tokenomics.js';
 export { Flywheel } from './Flywheel.js';

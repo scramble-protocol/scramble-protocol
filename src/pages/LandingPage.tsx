@@ -3,6 +3,7 @@ import { Hero } from '../components/landing/Hero.js';
 import { HowItWorks } from '../components/landing/HowItWorks.js';
 import { YokeTaxTiers } from '../components/landing/YokeTaxTiers.js';
 import { YieldEngines } from '../components/landing/YieldEngines.js';
+import { YieldCalculator } from '../components/landing/YieldCalculator.js';
 import { CookLevels } from '../components/landing/CookLevels.js';
 import { Tokenomics } from '../components/landing/Tokenomics.js';
 import { Flywheel } from '../components/landing/Flywheel.js';
@@ -32,6 +33,9 @@ function LandingPage(): React.ReactElement {
           </div>
           <div className="scroll-reveal">
             <YieldEngines />
+          </div>
+          <div className="scroll-reveal">
+            <YieldCalculator />
           </div>
           <div className="scroll-reveal">
             <CookLevels />
