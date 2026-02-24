@@ -16,6 +16,14 @@ const NETWORK_CONFIGS: Map<string, NetworkConfig> = new Map([
     },
   ],
   [
+    'testnet',
+    {
+      rpcUrl: 'https://testnet.opnet.org',
+      explorerUrl: 'https://testnet.opnet.org',
+      network: networks.opnetTestnet,
+    },
+  ],
+  [
     'mainnet',
     {
       rpcUrl: 'https://api.opnet.org',
