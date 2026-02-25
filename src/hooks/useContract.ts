@@ -4,10 +4,13 @@ import type { ContractInstance } from '../services/ContractService.js';
 import { ContractService } from '../services/ContractService.js';
 import { useOPNetProvider } from './useOPNetProvider.js';
 import { useWallet } from './useWallet.js';
+import { useNetwork } from './useNetwork.js';
+import { isDemoMode } from '../config/demoMode.js';
 
 export function useOP20Contract(address: string): ContractInstance | null {
   const { provider } = useOPNetProvider();
-  const { address: walletAddress } = useWallet();
+  const { opnetAddress } = useWallet();
+  const { network } = useNetwork();
 
   const contract = useMemo((): ContractInstance | null => {
     if (!address) {
@@ -15,17 +18,19 @@ export function useOP20Contract(address: string): ContractInstance | null {
     }
 
     try {
-      const instance = ContractService.getInstance().getOP20Contract(address, provider);
+      const service = ContractService.getInstance();
+      service.setNetwork(network);
+      const instance = service.getOP20Contract(address, provider);
 
-      if (walletAddress) {
-        ContractService.getInstance().setSender(walletAddress);
+      if (opnetAddress && !isDemoMode()) {
+        service.setSender(opnetAddress);
       }
 
       return instance;
     } catch {
       return null;
     }
-  }, [address, provider, walletAddress]);
+  }, [address, provider, opnetAddress, network]);
 
   return contract;
 }
@@ -35,7 +40,8 @@ export function useCustomContract(
   abi: BitcoinInterfaceAbi,
 ): ContractInstance | null {
   const { provider } = useOPNetProvider();
-  const { address: walletAddress } = useWallet();
+  const { opnetAddress } = useWallet();
+  const { network } = useNetwork();
 
   const contract = useMemo((): ContractInstance | null => {
     if (!address) {
@@ -43,17 +49,19 @@ export function useCustomContract(
     }
 
     try {
-      const instance = ContractService.getInstance().getCustomContract(address, provider, abi);
+      const service = ContractService.getInstance();
+      service.setNetwork(network);
+      const instance = service.getCustomContract(address, provider, abi);
 
-      if (walletAddress) {
-        ContractService.getInstance().setSender(walletAddress);
+      if (opnetAddress && !isDemoMode()) {
+        service.setSender(opnetAddress);
       }
 
       return instance;
     } catch {
       return null;
     }
-  }, [address, provider, abi, walletAddress]);
+  }, [address, provider, abi, opnetAddress, network]);
 
   return contract;
 }

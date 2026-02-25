@@ -8,6 +8,8 @@ import { useCustomContract, useOP20Contract } from './useContract.js';
 import { useWallet } from './useWallet.js';
 import { useBlockHeight } from './useBlockHeight.js';
 import { useNetwork } from './useNetwork.js';
+import { isDemoMode } from '../config/demoMode.js';
+import { DEMO_THE_PAN } from '../config/demoData.js';
 
 type ContractMethod = (...args: unknown[]) => Promise<CallResult>;
 type ContractMethods = Record<string, ContractMethod>;
@@ -26,7 +28,7 @@ interface ThePanState {
 
 export function useThePan(): ThePanState {
   const { network } = useNetwork();
-  const { address } = useWallet();
+  const { address, opnetAddress } = useWallet();
   const { blockHeight } = useBlockHeight();
   const contracts = getContracts(network);
 
@@ -41,6 +43,7 @@ export function useThePan(): ThePanState {
   const mountedRef = useRef<boolean>(true);
 
   useEffect(() => {
+    if (isDemoMode()) return;
     mountedRef.current = true;
 
     const fetchData = async (): Promise<void> => {
@@ -54,8 +57,8 @@ export function useThePan(): ThePanState {
       const methods = panContract as unknown as ContractMethods;
 
       try {
-        if (address && methods['getPosition']) {
-          const posResult = await methods['getPosition'](address);
+        if (opnetAddress && methods['getPosition']) {
+          const posResult = await methods['getPosition'](opnetAddress);
           if (mountedRef.current && posResult && !posResult.revert) {
             const props = posResult.properties as Record<string, bigint | number>;
             setPosition({
@@ -94,7 +97,7 @@ export function useThePan(): ThePanState {
     return (): void => {
       mountedRef.current = false;
     };
-  }, [panContract, address, blockHeight]);
+  }, [panContract, opnetAddress, blockHeight]);
 
   const executeTransaction = useCallback(
     async (
@@ -288,6 +291,8 @@ export function useThePan(): ThePanState {
       [],
     );
   }, [panContract, executeTransaction]);
+
+  if (isDemoMode()) return DEMO_THE_PAN;
 
   return {
     position,

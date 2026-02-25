@@ -8,6 +8,8 @@ import { useCustomContract, useOP20Contract } from './useContract.js';
 import { useWallet } from './useWallet.js';
 import { useBlockHeight } from './useBlockHeight.js';
 import { useNetwork } from './useNetwork.js';
+import { isDemoMode } from '../config/demoMode.js';
+import { DEMO_EGG_STAKING } from '../config/demoData.js';
 
 type ContractMethod = (...args: unknown[]) => Promise<CallResult>;
 type ContractMethods = Record<string, ContractMethod>;
@@ -23,7 +25,7 @@ interface EggStakingState {
 
 export function useEggStaking(): EggStakingState {
   const { network } = useNetwork();
-  const { address } = useWallet();
+  const { address, opnetAddress } = useWallet();
   const { blockHeight } = useBlockHeight();
   const contracts = getContracts(network);
 
@@ -36,10 +38,11 @@ export function useEggStaking(): EggStakingState {
   const mountedRef = useRef<boolean>(true);
 
   useEffect(() => {
+    if (isDemoMode()) return;
     mountedRef.current = true;
 
     const fetchData = async (): Promise<void> => {
-      if (!stakingContract || !address) {
+      if (!stakingContract || !opnetAddress) {
         if (mountedRef.current) {
           setIsLoading(false);
         }
@@ -50,7 +53,7 @@ export function useEggStaking(): EggStakingState {
 
       try {
         if (methods['getPosition']) {
-          const posResult = await methods['getPosition'](address);
+          const posResult = await methods['getPosition'](opnetAddress);
           if (mountedRef.current && posResult && !posResult.revert) {
             const props = posResult.properties as Record<string, bigint>;
             setPosition({
@@ -73,7 +76,7 @@ export function useEggStaking(): EggStakingState {
     return (): void => {
       mountedRef.current = false;
     };
-  }, [stakingContract, address, blockHeight]);
+  }, [stakingContract, opnetAddress, blockHeight]);
 
   const executeTransaction = useCallback(
     async (methodName: string, args: unknown[]): Promise<TransactionState> => {
@@ -205,6 +208,8 @@ export function useEggStaking(): EggStakingState {
   const claimRewards = useCallback(async (): Promise<TransactionState> => {
     return executeTransaction('claimRewards', []);
   }, [executeTransaction]);
+
+  if (isDemoMode()) return DEMO_EGG_STAKING;
 
   return { position, stake, unstake, claimRewards, isLoading, txState };
 }

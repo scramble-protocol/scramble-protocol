@@ -1,9 +1,13 @@
 import { useEffect, useCallback, useMemo } from 'react';
 import { useWalletConnect } from '@btc-vision/walletconnect';
+import type { Address } from '@btc-vision/transaction';
 import { ContractService } from '../services/ContractService.js';
+import { isDemoMode } from '../config/demoMode.js';
+import { DEMO_WALLET } from '../config/demoData.js';
 
 interface WalletState {
   readonly address: string | undefined;
+  readonly opnetAddress: Address | null;
   readonly isConnected: boolean;
   readonly balance: bigint;
   readonly connect: () => void;
@@ -16,8 +20,9 @@ export function useWallet(): WalletState {
   const walletContext = useWalletConnect();
 
   const address = walletContext.walletAddress ?? undefined;
+  const opnetAddress = walletContext.address ?? null;
   const isConnected = walletContext.walletAddress !== null;
-  const network = walletContext.network?.network ?? 'regtest';
+  const network = walletContext.network?.network ?? 'testnet';
 
   const balance = useMemo((): bigint => {
     if (walletContext.walletBalance === null) {
@@ -27,10 +32,15 @@ export function useWallet(): WalletState {
   }, [walletContext.walletBalance]);
 
   useEffect(() => {
-    if (address) {
-      ContractService.getInstance().setSender(address);
+    if (isDemoMode()) return;
+    if (opnetAddress) {
+      try {
+        ContractService.getInstance().setSender(opnetAddress);
+      } catch {
+        // setSender may fail if wallet address is not yet resolved
+      }
     }
-  }, [address]);
+  }, [opnetAddress]);
 
   const connect = useCallback((): void => {
     walletContext.openConnectModal();
@@ -44,8 +54,11 @@ export function useWallet(): WalletState {
     walletContext.openConnectModal();
   }, [walletContext]);
 
+  if (isDemoMode()) return DEMO_WALLET;
+
   return {
     address,
+    opnetAddress,
     isConnected,
     balance,
     connect,

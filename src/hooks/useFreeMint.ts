@@ -8,6 +8,8 @@ import { useCustomContract } from './useContract.js';
 import { useWallet } from './useWallet.js';
 import { useBlockHeight } from './useBlockHeight.js';
 import { useNetwork } from './useNetwork.js';
+import { isDemoMode } from '../config/demoMode.js';
+import { DEMO_FREE_MINT } from '../config/demoData.js';
 
 type ContractMethod = (...args: unknown[]) => Promise<CallResult>;
 type ContractMethods = Record<string, ContractMethod>;
@@ -22,7 +24,7 @@ interface FreeMintState {
 
 export function useFreeMint(): FreeMintState {
   const { network } = useNetwork();
-  const { address } = useWallet();
+  const { address, opnetAddress } = useWallet();
   const { blockHeight } = useBlockHeight();
   const contracts = getContracts(network);
 
@@ -35,10 +37,11 @@ export function useFreeMint(): FreeMintState {
   const mountedRef = useRef<boolean>(true);
 
   useEffect(() => {
+    if (isDemoMode()) return;
     mountedRef.current = true;
 
     const fetchData = async (): Promise<void> => {
-      if (!freeMintContract || !address) {
+      if (!freeMintContract || !opnetAddress) {
         if (mountedRef.current) {
           setIsLoading(false);
         }
@@ -49,7 +52,7 @@ export function useFreeMint(): FreeMintState {
 
       try {
         if (methods['getMintStatus']) {
-          const statusResult = await methods['getMintStatus'](address);
+          const statusResult = await methods['getMintStatus'](opnetAddress);
           if (mountedRef.current && statusResult && !statusResult.revert) {
             const props = statusResult.properties as Record<string, boolean | bigint>;
             setMintStatus({
@@ -61,7 +64,7 @@ export function useFreeMint(): FreeMintState {
         }
 
         if (methods['canClaim']) {
-          const canClaimResult = await methods['canClaim'](address);
+          const canClaimResult = await methods['canClaim'](opnetAddress);
           if (mountedRef.current && canClaimResult && !canClaimResult.revert) {
             const props = canClaimResult.properties as Record<string, boolean>;
             setCanClaim(props['canClaim'] ?? false);
@@ -81,7 +84,7 @@ export function useFreeMint(): FreeMintState {
     return (): void => {
       mountedRef.current = false;
     };
-  }, [freeMintContract, address, blockHeight]);
+  }, [freeMintContract, opnetAddress, blockHeight]);
 
   const claim = useCallback(async (): Promise<TransactionState> => {
     if (!freeMintContract || !address) {
@@ -135,6 +138,8 @@ export function useFreeMint(): FreeMintState {
       return errorState;
     }
   }, [freeMintContract, address, network]);
+
+  if (isDemoMode()) return DEMO_FREE_MINT;
 
   return { mintStatus, canClaim, claim, isLoading, txState };
 }

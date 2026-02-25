@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useOPNetProvider } from './useOPNetProvider.js';
+import { isDemoMode } from '../config/demoMode.js';
+import { DEMO_BLOCK } from '../config/demoData.js';
 
 const POLL_INTERVAL_MS = 30_000;
 
@@ -15,6 +17,7 @@ export function useBlockHeight(): BlockHeightState {
   const mountedRef = useRef<boolean>(true);
 
   useEffect(() => {
+    if (isDemoMode()) return;
     mountedRef.current = true;
 
     const fetchBlockHeight = async (): Promise<void> => {
@@ -42,6 +45,8 @@ export function useBlockHeight(): BlockHeightState {
       clearInterval(intervalId);
     };
   }, [provider]);
+
+  if (isDemoMode()) return DEMO_BLOCK;
 
   return { blockHeight, isLoading };
 }

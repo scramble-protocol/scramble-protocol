@@ -8,7 +8,7 @@ interface NetworkState {
 
 export function useNetwork(): NetworkState {
   const walletContext = useWalletConnect();
-  const [network, setNetwork] = useState<string>('regtest');
+  const [network, setNetwork] = useState<string>('testnet');
 
   const walletNetwork = walletContext.network?.network ?? null;
 

@@ -8,6 +8,8 @@ import { useCustomContract } from './useContract.js';
 import { useWallet } from './useWallet.js';
 import { useBlockHeight } from './useBlockHeight.js';
 import { useNetwork } from './useNetwork.js';
+import { isDemoMode } from '../config/demoMode.js';
+import { DEMO_SPATULA } from '../config/demoData.js';
 
 type ContractMethod = (...args: unknown[]) => Promise<CallResult>;
 type ContractMethods = Record<string, ContractMethod>;
@@ -21,7 +23,7 @@ interface SpatulaState {
 
 export function useSpatula(): SpatulaState {
   const { network } = useNetwork();
-  const { address } = useWallet();
+  const { address, opnetAddress } = useWallet();
   const { blockHeight } = useBlockHeight();
   const contracts = getContracts(network);
 
@@ -33,10 +35,11 @@ export function useSpatula(): SpatulaState {
   const mountedRef = useRef<boolean>(true);
 
   useEffect(() => {
+    if (isDemoMode()) return;
     mountedRef.current = true;
 
     const fetchData = async (): Promise<void> => {
-      if (!spatulaContract || !address) {
+      if (!spatulaContract || !opnetAddress) {
         if (mountedRef.current) {
           setIsLoading(false);
         }
@@ -47,7 +50,7 @@ export function useSpatula(): SpatulaState {
 
       try {
         if (methods['getHarvestInfo']) {
-          const infoResult = await methods['getHarvestInfo'](address);
+          const infoResult = await methods['getHarvestInfo'](opnetAddress);
           if (mountedRef.current && infoResult && !infoResult.revert) {
             const props = infoResult.properties as Record<string, bigint>;
             setHarvestInfo({
@@ -71,7 +74,7 @@ export function useSpatula(): SpatulaState {
     return (): void => {
       mountedRef.current = false;
     };
-  }, [spatulaContract, address, blockHeight]);
+  }, [spatulaContract, opnetAddress, blockHeight]);
 
   const harvest = useCallback(
     async (minAmountOut: bigint): Promise<TransactionState> => {
@@ -128,6 +131,8 @@ export function useSpatula(): SpatulaState {
     },
     [spatulaContract, address, network],
   );
+
+  if (isDemoMode()) return DEMO_SPATULA;
 
   return { harvestInfo, harvest, isLoading, txState };
 }

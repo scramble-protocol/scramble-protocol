@@ -7,6 +7,8 @@ import { useOP20Contract } from './useContract.js';
 import { useWallet } from './useWallet.js';
 import { useBlockHeight } from './useBlockHeight.js';
 import { useNetwork } from './useNetwork.js';
+import { isDemoMode } from '../config/demoMode.js';
+import { DEMO_EGG_TOKEN } from '../config/demoData.js';
 
 type ContractMethod = (...args: unknown[]) => Promise<CallResult>;
 type ContractMethods = Record<string, ContractMethod>;
@@ -20,7 +22,7 @@ interface EggTokenState {
 
 export function useEggToken(): EggTokenState {
   const { network } = useNetwork();
-  const { address } = useWallet();
+  const { address, opnetAddress } = useWallet();
   const { blockHeight } = useBlockHeight();
   const contracts = getContracts(network);
   const eggContract = useOP20Contract(contracts.eggToken);
@@ -31,6 +33,7 @@ export function useEggToken(): EggTokenState {
   const mountedRef = useRef<boolean>(true);
 
   useEffect(() => {
+    if (isDemoMode()) return;
     mountedRef.current = true;
 
     const fetchData = async (): Promise<void> => {
@@ -44,8 +47,8 @@ export function useEggToken(): EggTokenState {
       const methods = eggContract as unknown as ContractMethods;
 
       try {
-        if (address && methods['balanceOf']) {
-          const balanceResult = await methods['balanceOf'](address);
+        if (opnetAddress && methods['balanceOf']) {
+          const balanceResult = await methods['balanceOf'](opnetAddress);
           if (mountedRef.current && balanceResult && !balanceResult.revert) {
             const decoded = balanceResult.properties as Record<string, bigint>;
             setBalance(decoded['balance'] ?? 0n);
@@ -73,7 +76,7 @@ export function useEggToken(): EggTokenState {
     return (): void => {
       mountedRef.current = false;
     };
-  }, [eggContract, address, blockHeight]);
+  }, [eggContract, opnetAddress, blockHeight]);
 
   const increaseAllowance = useCallback(
     async (spender: string, amount: bigint): Promise<TransactionState> => {
@@ -114,6 +117,8 @@ export function useEggToken(): EggTokenState {
     },
     [eggContract, address, network],
   );
+
+  if (isDemoMode()) return DEMO_EGG_TOKEN;
 
   return { balance, totalSupply, increaseAllowance, isLoading };
 }

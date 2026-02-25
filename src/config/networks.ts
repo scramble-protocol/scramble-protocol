@@ -42,7 +42,7 @@ export function getNetworkConfig(network: string): NetworkConfig {
 }
 
 export function getDefaultNetwork(): string {
-  return 'regtest';
+  return 'testnet';
 }
 
 export type { NetworkConfig };

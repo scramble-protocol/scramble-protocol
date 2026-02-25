@@ -56,8 +56,32 @@ const MAINNET_CONTRACTS: ScrambleContracts = {
     '0x0000000000000000000000000000000000000000000000000000000000000019',
 };
 
+const TESTNET_CONTRACTS: ScrambleContracts = {
+  motoToken:
+    '0xfd4473840751d58d9f8b73bdd57d6c5260453d5518bd7cd02d0a4cf3df9bf4dd',
+  thePan:
+    '0x3dcf187cc79854544bb71c97925dff965f79d82bad60e015758d2dbd8f0511ac',
+  theSpatula:
+    '0x1a4d429d59e571b6a03fb010ba0a1f64670d1dcd31673e7577c08009d1e19ac9',
+  eggToken:
+    '0x14ff866a4cce1a24ba123c49a2a924227bf644d773002a73186a17800b4554ef',
+  eggStaking:
+    '0x37fa2e2df9e9f80101040383e0a4a793f84e77e4fbcdc15a64dacf5b48d3cc0f',
+  freeMint:
+    '0xadbb34382d4b35e9eca9d6d546c5fa685737a71e89abdbff793f708b96328e0f',
+  lpMiningRewards:
+    '0xaeb6a3d980e1b3307c17c0fb7bc2f9f729f70a67d6a78e222d0bb400a8bfb4d5',
+  motoSwapRouter:
+    '0x0e6ff1f2d7db7556cb37729e3738f4dae82659b984b2621fab08e1111b1b937a',
+  motoSwapFactory:
+    '0x0000000000000000000000000000000000000000000000000000000000000000',
+  motoChef:
+    '0x5a7ca2695ae71504eec58f075e5b8888000118a07d6fe51e59f9e3821002fc23',
+};
+
 const CONTRACT_CONFIGS: Map<string, ScrambleContracts> = new Map([
   ['regtest', REGTEST_CONTRACTS],
+  ['testnet', TESTNET_CONTRACTS],
   ['mainnet', MAINNET_CONTRACTS],
 ]);
 

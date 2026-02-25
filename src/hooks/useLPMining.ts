@@ -8,6 +8,8 @@ import { useCustomContract, useOP20Contract } from './useContract.js';
 import { useWallet } from './useWallet.js';
 import { useBlockHeight } from './useBlockHeight.js';
 import { useNetwork } from './useNetwork.js';
+import { isDemoMode } from '../config/demoMode.js';
+import { DEMO_LP_MINING } from '../config/demoData.js';
 
 type ContractMethod = (...args: unknown[]) => Promise<CallResult>;
 type ContractMethods = Record<string, ContractMethod>;
@@ -23,7 +25,7 @@ interface LPMiningState {
 
 export function useLPMining(): LPMiningState {
   const { network } = useNetwork();
-  const { address } = useWallet();
+  const { address, opnetAddress } = useWallet();
   const { blockHeight } = useBlockHeight();
   const contracts = getContracts(network);
 
@@ -36,10 +38,11 @@ export function useLPMining(): LPMiningState {
   const mountedRef = useRef<boolean>(true);
 
   useEffect(() => {
+    if (isDemoMode()) return;
     mountedRef.current = true;
 
     const fetchData = async (): Promise<void> => {
-      if (!lpMiningContract || !address) {
+      if (!lpMiningContract || !opnetAddress) {
         if (mountedRef.current) {
           setIsLoading(false);
         }
@@ -50,7 +53,7 @@ export function useLPMining(): LPMiningState {
 
       try {
         if (methods['getPosition']) {
-          const posResult = await methods['getPosition'](address);
+          const posResult = await methods['getPosition'](opnetAddress);
           if (mountedRef.current && posResult && !posResult.revert) {
             const props = posResult.properties as Record<string, bigint>;
             setPosition({
@@ -73,7 +76,7 @@ export function useLPMining(): LPMiningState {
     return (): void => {
       mountedRef.current = false;
     };
-  }, [lpMiningContract, address, blockHeight]);
+  }, [lpMiningContract, opnetAddress, blockHeight]);
 
   const executeTransaction = useCallback(
     async (methodName: string, args: unknown[]): Promise<TransactionState> => {
@@ -205,6 +208,8 @@ export function useLPMining(): LPMiningState {
   const claimRewards = useCallback(async (): Promise<TransactionState> => {
     return executeTransaction('claimRewards', []);
   }, [executeTransaction]);
+
+  if (isDemoMode()) return DEMO_LP_MINING;
 
   return { position, stakeLP, unstakeLP, claimRewards, isLoading, txState };
 }

@@ -6,8 +6,9 @@ import {
   type BitcoinInterfaceAbi,
   type JSONRpcProvider,
 } from 'opnet';
-import { Address } from '@btc-vision/transaction';
-import { networks } from '@btc-vision/bitcoin';
+import type { Address } from '@btc-vision/transaction';
+import { type Network } from '@btc-vision/bitcoin';
+import { getNetworkConfig } from '../config/networks.js';
 
 type ContractInstance = BaseContract<BaseContractProperties> &
   Omit<BaseContractProperties, keyof BaseContract<BaseContractProperties>>;
@@ -15,6 +16,7 @@ type ContractInstance = BaseContract<BaseContractProperties> &
 class ContractService {
   private static instance: ContractService | undefined;
   private readonly cache: Map<string, ContractInstance> = new Map();
+  private currentNetwork: string = 'testnet';
 
   private constructor() {}
 
@@ -23,6 +25,14 @@ class ContractService {
       ContractService.instance = new ContractService();
     }
     return ContractService.instance;
+  }
+
+  setNetwork(networkName: string): void {
+    this.currentNetwork = networkName;
+  }
+
+  private resolveNetwork(): Network {
+    return getNetworkConfig(this.currentNetwork).network;
   }
 
   getOP20Contract(
@@ -39,7 +49,7 @@ class ContractService {
       address,
       OP_20_ABI,
       provider,
-      networks.regtest,
+      this.resolveNetwork(),
     );
 
     this.cache.set(key, contract);
@@ -61,17 +71,16 @@ class ContractService {
       address,
       abi,
       provider,
-      networks.regtest,
+      this.resolveNetwork(),
     );
 
     this.cache.set(key, contract);
     return contract;
   }
 
-  setSender(address: string): void {
-    const senderAddress = Address.fromString(address);
+  setSender(address: Address): void {
     for (const contract of this.cache.values()) {
-      contract.setSender(senderAddress);
+      contract.setSender(address);
     }
   }
 
