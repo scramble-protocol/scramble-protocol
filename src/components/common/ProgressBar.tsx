@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react';
-import '../../styles/components/progress-bar.css';
+import { Progress } from '@/components/ui/8bit/progress.js';
+import { cn } from '@/lib/utils.js';
 
 interface ProgressBarProps {
   readonly value: number;
@@ -9,6 +10,13 @@ interface ProgressBarProps {
   readonly label?: string;
   readonly size?: 'sm' | 'md';
 }
+
+const COLOR_MAP: Record<string, string> = {
+  accent: 'bg-primary',
+  egg: 'bg-egg',
+  sizzle: 'bg-sizzle',
+  moto: 'bg-moto',
+} as const;
 
 function ProgressBar({
   value,
@@ -23,24 +31,17 @@ function ProgressBar({
   const displayLabel = label !== undefined ? label : `${String(percentage)}%`;
 
   return (
-    <div className="progress">
+    <div className="flex flex-col gap-1">
       {showLabel && (
-        <div className="progress__label">
-          <span>{displayLabel}</span>
-        </div>
+        <span className="text-xs text-muted-foreground">{displayLabel}</span>
       )}
-      <div
-        className={`progress__track progress__track--${size}`}
-        role="progressbar"
-        aria-valuenow={clamped}
-        aria-valuemin={0}
-        aria-valuemax={max}
-      >
-        <div
-          className={`progress__fill progress__fill--${variant}`}
-          style={{ width: `${String(percentage)}%` }}
-        />
-      </div>
+      <Progress
+        value={percentage}
+        variant="retro"
+        progressBg={COLOR_MAP[variant]}
+        className={cn(size === 'sm' ? 'h-2' : 'h-4')}
+        font="normal"
+      />
     </div>
   );
 }

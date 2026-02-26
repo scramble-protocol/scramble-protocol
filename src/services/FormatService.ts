@@ -52,7 +52,7 @@ function parseTokenAmount(amount: string, decimals: number): bigint {
   }
 
   const negative = trimmed.startsWith('-');
-  const unsigned = negative ? trimmed.slice(1) : trimmed;
+  const unsigned = negative ? trimmed.slice(1).replaceAll(',', '') : trimmed.replaceAll(',', '');
   const parts = unsigned.split('.');
   const wholePart = parts[0] ?? '0';
   const fractionalPart = parts[1] ?? '';

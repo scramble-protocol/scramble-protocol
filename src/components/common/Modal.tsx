@@ -1,7 +1,10 @@
-import { useEffect, useRef, useCallback } from 'react';
-import { createPortal } from 'react-dom';
-import type { ReactElement, ReactNode, MouseEvent, KeyboardEvent } from 'react';
-import '../../styles/components/modal.css';
+import type { ReactElement, ReactNode } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/8bit/dialog.js';
 
 interface ModalProps {
   readonly isOpen: boolean;
@@ -11,97 +14,28 @@ interface ModalProps {
   readonly size?: 'sm' | 'md' | 'lg';
 }
 
+const SIZE_CLASSES = {
+  sm: 'sm:max-w-sm',
+  md: 'sm:max-w-lg',
+  lg: 'sm:max-w-2xl',
+} as const;
+
 function Modal({
   isOpen,
   onClose,
   title,
   children,
   size = 'md',
-}: ModalProps): ReactElement | null {
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  const handleEscape = useCallback(
-    (e: globalThis.KeyboardEvent): void => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    },
-    [onClose],
-  );
-
-  useEffect((): (() => void) | undefined => {
-    if (!isOpen) {
-      return undefined;
-    }
-
-    document.addEventListener('keydown', handleEscape);
-    document.body.style.overflow = 'hidden';
-
-    // Focus first focusable element inside the modal content
-    const timer = setTimeout((): void => {
-      const el = contentRef.current;
-      if (el === null) {
-        return;
-      }
-      const focusable = el.querySelector<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-      );
-      if (focusable !== null) {
-        focusable.focus();
-      }
-    }, 0);
-
-    return (): void => {
-      clearTimeout(timer);
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = '';
-    };
-  }, [isOpen, handleEscape]);
-
-  if (!isOpen) {
-    return null;
-  }
-
-  function handleOverlayClick(e: MouseEvent<HTMLDivElement>): void {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  }
-
-  function handleCloseKeyDown(e: KeyboardEvent<HTMLButtonElement>): void {
-    if (e.key === 'Enter' || e.key === ' ') {
-      onClose();
-    }
-  }
-
-  return createPortal(
-    <div
-      className="modal-overlay"
-      onClick={handleOverlayClick}
-      role="dialog"
-      aria-modal="true"
-      aria-label={title}
-    >
-      <div
-        ref={contentRef}
-        className={`modal-content modal-content--${size}`}
-      >
-        <div className="modal__header">
-          <h2 className="modal__title">{title}</h2>
-          <button
-            className="modal__close"
-            onClick={onClose}
-            onKeyDown={handleCloseKeyDown}
-            aria-label="Close modal"
-            type="button"
-          >
-            &#x2715;
-          </button>
-        </div>
-        <div className="modal__body">{children}</div>
-      </div>
-    </div>,
-    document.body,
+}: ModalProps): ReactElement {
+  return (
+    <Dialog open={isOpen} onOpenChange={(open: boolean): void => { if (!open) onClose(); }}>
+      <DialogContent className={SIZE_CLASSES[size]} font="normal">
+        <DialogHeader>
+          <DialogTitle className="font-retro text-sm" font="normal">{title}</DialogTitle>
+        </DialogHeader>
+        <div className="mt-2">{children}</div>
+      </DialogContent>
+    </Dialog>
   );
 }
 

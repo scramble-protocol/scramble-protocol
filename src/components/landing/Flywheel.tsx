@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../styles/components/flywheel.css';
+import { PixelEmoji } from '../common/PixelEmoji.js';
 
 interface FlywheelNode {
   readonly icon: string;
@@ -17,21 +17,19 @@ const NODES: readonly FlywheelNode[] = [
 
 function Flywheel(): React.ReactElement {
   return (
-    <section className="flywheel">
-      <div className="flywheel__inner">
-        <h2 className="flywheel__heading">The Scramble Flywheel</h2>
-        <div className="flywheel__flow">
+    <section className="py-16 px-4">
+      <div className="mx-auto max-w-5xl">
+        <h2 className="font-retro text-sm text-center text-primary mb-10">The Scramble Flywheel</h2>
+        <div className="flex flex-wrap items-center justify-center gap-3">
           {NODES.map(
             (node: FlywheelNode, index: number): React.ReactElement => (
               <React.Fragment key={node.label}>
-                <div className="flywheel__node">
-                  <span className="flywheel__node-icon" aria-hidden="true">
-                    {node.icon}
-                  </span>
-                  <p className="flywheel__node-label">{node.label}</p>
+                <div className="flex flex-col items-center gap-2 rounded-md border border-border bg-card px-4 py-5 text-center w-36">
+                  <PixelEmoji emoji={node.icon} size={36} />
+                  <p className="text-xs text-muted-foreground leading-relaxed">{node.label}</p>
                 </div>
                 {index < NODES.length - 1 && (
-                  <span className="flywheel__arrow" aria-hidden="true">
+                  <span className="text-muted-foreground text-lg hidden sm:block" aria-hidden="true">
                     &rarr;
                   </span>
                 )}
@@ -39,11 +37,9 @@ function Flywheel(): React.ReactElement {
             ),
           )}
         </div>
-        <div className="flywheel__repeat">
-          <span className="flywheel__repeat-icon" aria-hidden="true">
-            &#x21BB;
-          </span>
-          <p className="flywheel__repeat-text">
+        <div className="mt-8 flex items-center justify-center gap-3 text-muted-foreground">
+          <PixelEmoji emoji="&#x21BB;" size={24} />
+          <p className="text-sm">
             More yield means more Sizzle. The cycle repeats.
           </p>
         </div>

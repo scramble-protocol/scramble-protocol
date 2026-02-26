@@ -1,5 +1,6 @@
 import type { ReactElement, ChangeEvent } from 'react';
-import '../../styles/components/input.css';
+import { Input as BitInput } from '@/components/ui/8bit/input.js';
+import { cn } from '@/lib/utils.js';
 
 interface InputProps {
   readonly label?: string;
@@ -26,56 +27,48 @@ function Input({
   disabled = false,
   type = 'text',
 }: InputProps): ReactElement {
-  const hasSuffix = suffix !== undefined || maxButton;
-
-  const inputClassNames = [
-    'input-field__input',
-    hasSuffix ? 'input-field__input--has-suffix' : '',
-    error !== undefined ? 'input-field__input--error' : '',
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  const suffixClassNames = [
-    'input-field__suffix',
-    maxButton ? 'input-field__suffix--with-max' : '',
-  ]
-    .filter(Boolean)
-    .join(' ');
-
   function handleChange(e: ChangeEvent<HTMLInputElement>): void {
     onChange(e.target.value);
   }
 
   return (
-    <div className="input-field">
+    <div className="flex flex-col gap-1.5">
       {label !== undefined && (
-        <label className="input-field__label">{label}</label>
+        <label className="text-sm font-medium text-muted-foreground">{label}</label>
       )}
-      <div className="input-field__wrapper">
-        <input
-          className={inputClassNames}
+      <div className="relative flex items-center">
+        <BitInput
+          className={cn(
+            'w-full',
+            (suffix !== undefined || maxButton) && 'pr-20',
+            error !== undefined && 'border-destructive'
+          )}
           type={type}
           value={value}
           onChange={handleChange}
           placeholder={placeholder}
           disabled={disabled}
+          font="normal"
         />
-        {suffix !== undefined && (
-          <span className={suffixClassNames}>{suffix}</span>
-        )}
-        {maxButton && (
-          <button
-            className="input-field__max-btn"
-            type="button"
-            onClick={onMax}
-          >
-            MAX
-          </button>
+        {(suffix !== undefined || maxButton) && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 z-10">
+            {maxButton && (
+              <button
+                className="px-2 py-0.5 text-xs font-bold text-primary hover:text-primary/80 transition-colors"
+                type="button"
+                onClick={onMax}
+              >
+                MAX
+              </button>
+            )}
+            {suffix !== undefined && (
+              <span className="text-sm text-muted-foreground">{suffix}</span>
+            )}
+          </div>
         )}
       </div>
       {error !== undefined && (
-        <p className="input-field__error">{error}</p>
+        <p className="text-xs text-destructive">{error}</p>
       )}
     </div>
   );

@@ -21,3 +21,8 @@ export type { BadgeProps } from './Badge.js';
 
 export { TransactionStatus } from './TransactionStatus.js';
 export type { TransactionStatusProps } from './TransactionStatus.js';
+
+export { OnThePan } from './OnThePan.js';
+export type { OnThePanProps } from './OnThePan.js';
+
+export { PixelEmoji } from './PixelEmoji.js';

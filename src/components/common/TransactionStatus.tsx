@@ -1,7 +1,6 @@
 import type { ReactElement } from 'react';
 import type { TransactionState } from '../../types/index.js';
 import { Spinner } from './Spinner.js';
-import '../../styles/components/transaction-status.css';
 
 interface TransactionStatusProps {
   readonly state: TransactionState;
@@ -16,6 +15,7 @@ function truncateTxId(txId: string): string {
 
 const STATUS_LABELS: Record<string, string> = {
   approving: 'Approving...',
+  confirming: 'Waiting for approval to confirm...',
   simulating: 'Simulating...',
   signing: 'Waiting for wallet...',
   broadcasting: 'Broadcasting...',
@@ -33,9 +33,14 @@ function TransactionStatusComponent({
   const pendingLabel = STATUS_LABELS[status];
   if (pendingLabel !== undefined) {
     return (
-      <div className="tx-status">
+      <div className="flex items-center gap-3 rounded-md border border-border bg-card p-3">
         <Spinner size="sm" />
-        <span>{pendingLabel}</span>
+        <div className="flex flex-col gap-0.5">
+          <span className="text-sm text-foreground">{pendingLabel}</span>
+          {state.message !== undefined && (
+            <span className="text-xs text-muted-foreground">{state.message}</span>
+          )}
+        </div>
       </div>
     );
   }
@@ -43,21 +48,24 @@ function TransactionStatusComponent({
   if (status === 'confirmed') {
     const txId = state.txId;
     return (
-      <div className="tx-status tx-status--confirmed">
-        <span className="tx-status__check-icon" aria-hidden="true">
-          &#x2713;
-        </span>
-        <span>Confirmed</span>
-        {txId !== undefined && (
-          <a
-            className="tx-status__link"
-            href={`https://explorer.opnet.org/tx/${txId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {truncateTxId(txId)}
-          </a>
-        )}
+      <div className="flex items-center gap-3 rounded-md border border-green-500/30 bg-green-500/10 p-3">
+        <span className="text-green-500 text-lg" aria-hidden="true">&#x2713;</span>
+        <div className="flex flex-col gap-0.5">
+          <span className="text-sm text-green-400">Confirmed</span>
+          {state.message !== undefined && (
+            <span className="text-xs text-green-300">{state.message}</span>
+          )}
+          {txId !== undefined && (
+            <a
+              className="text-xs text-primary hover:underline"
+              href={`https://explorer.opnet.org/tx/${txId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {truncateTxId(txId)}
+            </a>
+          )}
+        </div>
       </div>
     );
   }
@@ -65,11 +73,9 @@ function TransactionStatusComponent({
   if (status === 'error') {
     const errorMessage = state.error ?? 'Transaction failed';
     return (
-      <div className="tx-status tx-status--error">
-        <span className="tx-status__error-icon" aria-hidden="true">
-          &#x2715;
-        </span>
-        <span>{errorMessage}</span>
+      <div className="flex items-center gap-3 rounded-md border border-destructive/30 bg-destructive/10 p-3">
+        <span className="text-destructive text-lg" aria-hidden="true">&#x2715;</span>
+        <span className="text-sm text-destructive">{errorMessage}</span>
       </div>
     );
   }

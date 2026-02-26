@@ -108,6 +108,7 @@ export function useSpatula(): SpatulaState {
         const result = await simulationResult.sendTransaction({
           signer: null,
           mldsaSigner: null,
+          linkMLDSAPublicKeyToAddress: false,
           refundTo: address,
           maximumAllowedSatToSpend: 1_000_000n,
           feeRate: 1,

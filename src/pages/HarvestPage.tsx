@@ -4,9 +4,8 @@ import { PageLayout } from '../components/layout/index.js';
 import { useSpatula, useWallet } from '../hooks/index.js';
 import { Card, Button, Spinner, TransactionStatus } from '../components/common/index.js';
 import { FormatService } from '../services/FormatService.js';
-import '../styles/components/harvest-page.css';
 
-const TOKEN_DECIMALS = 8;
+const TOKEN_DECIMALS = 18;
 
 interface HarvestHistoryEntry {
   readonly block: bigint;
@@ -27,29 +26,27 @@ function HarvestCard({
 }): React.ReactElement {
   return (
     <Card title="The Flip" subtitle="Anyone can call The Flip to harvest protocol yields" glow="sizzle">
-      <div className="harvest-page__card-content">
-        <div className="harvest-page__info-grid">
-          <div className="harvest-page__info-row">
-            <span className="harvest-page__info-label">Pending Amount</span>
-            <span className="harvest-page__info-value">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Pending Amount</span>
+            <span className="font-semibold text-foreground">
               {FormatService.formatBigIntWithDecimals(harvestInfo?.pendingAmount ?? 0n, TOKEN_DECIMALS, 4)} MOTO
             </span>
           </div>
-          <div className="harvest-page__info-row">
-            <span className="harvest-page__info-label">Caller Bounty</span>
-            <span className="harvest-page__info-value">
-              0.5%
-            </span>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Caller Bounty</span>
+            <span className="font-medium text-primary">0.5%</span>
           </div>
-          <div className="harvest-page__info-row">
-            <span className="harvest-page__info-label">Last Harvest Block</span>
-            <span className="harvest-page__info-value">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Last Harvest Block</span>
+            <span className="font-medium text-foreground">
               {(harvestInfo?.lastHarvestBlock ?? 0n).toString()}
             </span>
           </div>
         </div>
-        <p className="harvest-page__note">
-          Anyone can call The Flip. The Spatula claims MotoChef rewards, swaps to MOTO, and splits: 0.5% bounty to caller, 5% to $EGG stakers, 94.5% back to The Pan's Sizzle drip.
+        <p className="text-xs text-muted-foreground">
+          Anyone can call The Flip. The Spatula claims MotoChef rewards, swaps to MOTO, and splits: 0.5% bounty to caller, 5% to $EGG stakers, 94.5% back to The Pan&apos;s Sizzle drip.
         </p>
         <Button
           onClick={onHarvest}
@@ -71,27 +68,27 @@ function HarvestHistory({
 }): React.ReactElement {
   return (
     <Card title="Harvest History">
-      <div className="harvest-page__history">
-        {entries.length === 0 ? (
-          <p className="harvest-page__empty-text">No harvest history yet.</p>
-        ) : (
-          <table className="harvest-page__table">
+      {entries.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No harvest history yet.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
             <thead>
-              <tr>
-                <th className="harvest-page__th">Block</th>
-                <th className="harvest-page__th">Amount</th>
-                <th className="harvest-page__th">Caller</th>
+              <tr className="border-b border-border">
+                <th className="pb-2 text-left text-xs font-medium text-muted-foreground">Block</th>
+                <th className="pb-2 text-left text-xs font-medium text-muted-foreground">Amount</th>
+                <th className="pb-2 text-left text-xs font-medium text-muted-foreground">Caller</th>
               </tr>
             </thead>
             <tbody>
               {entries.map(
                 (entry: HarvestHistoryEntry): React.ReactElement => (
-                  <tr key={entry.block.toString()} className="harvest-page__tr">
-                    <td className="harvest-page__td">{entry.block.toString()}</td>
-                    <td className="harvest-page__td">
+                  <tr key={entry.block.toString()} className="border-b border-border/50">
+                    <td className="py-2 text-foreground">{entry.block.toString()}</td>
+                    <td className="py-2 text-foreground">
                       {FormatService.formatBigIntWithDecimals(entry.amount, TOKEN_DECIMALS, 4)} MOTO
                     </td>
-                    <td className="harvest-page__td">
+                    <td className="py-2 text-muted-foreground">
                       {FormatService.formatAddress(entry.caller)}
                     </td>
                   </tr>
@@ -99,8 +96,8 @@ function HarvestHistory({
               )}
             </tbody>
           </table>
-        )}
-      </div>
+        </div>
+      )}
     </Card>
   );
 }
@@ -122,10 +119,8 @@ function HarvestPage(): React.ReactElement {
   if (spatula.isLoading && spatula.harvestInfo === null) {
     return (
       <PageLayout title="The Flip">
-        <div className="harvest-page">
-          <div className="harvest-page__loading">
-            <Spinner size="lg" />
-          </div>
+        <div className="flex items-center justify-center py-16">
+          <Spinner size="lg" />
         </div>
       </PageLayout>
     );
@@ -133,8 +128,8 @@ function HarvestPage(): React.ReactElement {
 
   return (
     <PageLayout title="The Flip">
-      <div className="harvest-page">
-        <div className="harvest-page__centered">
+      <div className="flex flex-col gap-6">
+        <div className="mx-auto w-full max-w-lg flex flex-col gap-4">
           <HarvestCard
             harvestInfo={spatula.harvestInfo}
             isConnected={isConnected}

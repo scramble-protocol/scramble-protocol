@@ -2,7 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { WalletConnectProvider } from '@btc-vision/walletconnect';
 import { App } from './App.js';
-import './styles/global.css';
+import './styles/app.css';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

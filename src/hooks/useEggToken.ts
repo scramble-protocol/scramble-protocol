@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { TransactionState } from '../types/index.js';
 import type { CallResult } from 'opnet';
+import { Address } from '@btc-vision/transaction';
 import { getContracts } from '../config/contracts.js';
 import { getNetworkConfig } from '../config/networks.js';
 import { useOP20Contract } from './useContract.js';
@@ -85,14 +86,14 @@ export function useEggToken(): EggTokenState {
       }
 
       const methods = eggContract as unknown as ContractMethods;
-      const approveMethod = methods['approve'];
+      const allowanceMethod = methods['increaseAllowance'];
 
-      if (!approveMethod) {
-        return { status: 'error', error: 'Approve method not found on contract' };
+      if (!allowanceMethod) {
+        return { status: 'error', error: 'increaseAllowance method not found on contract' };
       }
 
       try {
-        const simulationResult = await approveMethod(spender, amount);
+        const simulationResult = await allowanceMethod(Address.fromString(spender), amount);
 
         if (simulationResult.revert) {
           return { status: 'error', error: simulationResult.revert.toString() };
@@ -102,6 +103,7 @@ export function useEggToken(): EggTokenState {
         const result = await simulationResult.sendTransaction({
           signer: null,
           mldsaSigner: null,
+          linkMLDSAPublicKeyToAddress: false,
           refundTo: address,
           maximumAllowedSatToSpend: 1_000_000n,
           feeRate: 1,

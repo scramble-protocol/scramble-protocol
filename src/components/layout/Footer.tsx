@@ -1,6 +1,5 @@
 import type { ReactElement } from 'react';
 import { useNetwork } from '../../hooks/useNetwork.js';
-import '../../styles/components/footer.css';
 
 interface FooterLink {
   readonly label: string;
@@ -20,52 +19,56 @@ function Footer(): ReactElement {
   const currentYear: number = new Date().getFullYear();
 
   return (
-    <footer className="footer">
-      <div className="footer__inner">
-        {/* Column 1: Branding */}
-        <div>
-          <div className="footer__brand-name">Scramble Protocol</div>
-          <p className="footer__tagline">DeFi yield on Bitcoin L1</p>
-        </div>
-
-        {/* Column 2: Links */}
-        <div>
-          <div className="footer__heading">Links</div>
-          <div className="footer__links">
-            {FOOTER_LINKS.map(
-              (link: FooterLink): ReactElement => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  className="footer__link"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {link.label}
-                </a>
-              ),
-            )}
+    <footer className="border-t border-border bg-card">
+      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
+          {/* Branding */}
+          <div>
+            <div className="font-retro text-xs text-primary">Scramble Protocol</div>
+            <p className="mt-2 text-sm text-muted-foreground">DeFi yield on Bitcoin L1</p>
           </div>
-        </div>
 
-        {/* Column 3: Network */}
-        <div>
-          <div className="footer__heading">Network</div>
-          <div className="footer__network-badge">
-            <span className="footer__network-dot" />
-            <span>{network}</span>
+          {/* Links */}
+          <div>
+            <div className="font-retro text-[10px] text-foreground uppercase tracking-wider">Links</div>
+            <div className="mt-3 flex flex-col gap-2">
+              {FOOTER_LINKS.map(
+                (link: FooterLink): ReactElement => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {link.label}
+                  </a>
+                ),
+              )}
+            </div>
           </div>
-          <p className="footer__disclaimer">
-            Scramble Protocol is experimental software. Use at your own risk.
-            Smart contracts are unaudited.
-          </p>
+
+          {/* Network */}
+          <div>
+            <div className="font-retro text-[10px] text-foreground uppercase tracking-wider">Network</div>
+            <div className="mt-3 flex items-center gap-2">
+              <span className="inline-block size-2 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-sm text-muted-foreground">{network}</span>
+            </div>
+            <p className="mt-3 text-xs text-muted-foreground/70">
+              Scramble Protocol is experimental software. Use at your own risk.
+              Smart contracts are unaudited.
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className="footer__bottom">
-        <p className="footer__copyright">
-          &copy; {currentYear} Scramble Protocol. All rights reserved.
-        </p>
+      <div className="border-t border-border">
+        <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6 lg:px-8">
+          <p className="text-center text-xs text-muted-foreground">
+            &copy; {currentYear} Scramble Protocol. All rights reserved.
+          </p>
+        </div>
       </div>
     </footer>
   );

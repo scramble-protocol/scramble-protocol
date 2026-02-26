@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import type { ReactElement, ReactNode } from 'react';
 import { Header } from './Header.js';
 import { Footer } from './Footer.js';
-import '../../styles/components/page-layout.css';
 
 interface PageLayoutProps {
   readonly children: ReactNode;
@@ -17,9 +16,11 @@ function PageLayout({ children, title }: PageLayoutProps): ReactElement {
   }, [title]);
 
   return (
-    <div className="page-layout">
+    <div className="flex min-h-screen flex-col bg-background">
       <Header />
-      <main className="page-layout__content">{children}</main>
+      <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        {children}
+      </main>
       <Footer />
     </div>
   );

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { TransactionState, VaultPosition, VaultStats } from '../types/index.js';
 import type { CallResult } from 'opnet';
+import { Address } from '@btc-vision/transaction';
 import { THE_PAN_ABI } from '../abi/index.js';
 import { getContracts } from '../config/contracts.js';
 import { getNetworkConfig } from '../config/networks.js';
@@ -133,6 +134,7 @@ export function useThePan(): ThePanState {
         const result = await simulationResult.sendTransaction({
           signer: null,
           mldsaSigner: null,
+          linkMLDSAPublicKeyToAddress: false,
           refundTo: address,
           maximumAllowedSatToSpend: 1_000_000n,
           feeRate: 1,
@@ -170,13 +172,13 @@ export function useThePan(): ThePanState {
       try {
         setTxState({ status: 'approving' });
         const methods = tokenContract as ContractMethods;
-        const approveMethod = methods['approve'];
+        const allowanceMethod = methods['increaseAllowance'];
 
-        if (!approveMethod) {
-          return { status: 'error', error: 'Approve method not found on token contract' };
+        if (!allowanceMethod) {
+          return { status: 'error', error: 'increaseAllowance method not found on token contract' };
         }
 
-        const simulationResult = await approveMethod(spender, amount);
+        const simulationResult = await allowanceMethod(Address.fromString(spender), amount);
 
         if (simulationResult.revert) {
           const errorState: TransactionState = {
@@ -191,6 +193,7 @@ export function useThePan(): ThePanState {
         const result = await simulationResult.sendTransaction({
           signer: null,
           mldsaSigner: null,
+          linkMLDSAPublicKeyToAddress: false,
           refundTo: address,
           maximumAllowedSatToSpend: 1_000_000n,
           feeRate: 1,

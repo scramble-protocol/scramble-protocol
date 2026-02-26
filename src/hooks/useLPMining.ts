@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { TransactionState, FarmPosition } from '../types/index.js';
 import type { CallResult } from 'opnet';
+import { Address } from '@btc-vision/transaction';
 import { LP_MINING_REWARDS_ABI } from '../abi/index.js';
 import { getContracts } from '../config/contracts.js';
 import { getNetworkConfig } from '../config/networks.js';
@@ -110,6 +111,7 @@ export function useLPMining(): LPMiningState {
         const result = await simulationResult.sendTransaction({
           signer: null,
           mldsaSigner: null,
+          linkMLDSAPublicKeyToAddress: false,
           refundTo: address,
           maximumAllowedSatToSpend: 1_000_000n,
           feeRate: 1,
@@ -143,13 +145,13 @@ export function useLPMining(): LPMiningState {
       try {
         setTxState({ status: 'approving' });
         const methods = lpTokenContract as unknown as ContractMethods;
-        const approveMethod = methods['approve'];
+        const allowanceMethod = methods['increaseAllowance'];
 
-        if (!approveMethod) {
-          return { status: 'error', error: 'Approve method not found on LP token contract' };
+        if (!allowanceMethod) {
+          return { status: 'error', error: 'increaseAllowance method not found on LP token contract' };
         }
 
-        const simulationResult = await approveMethod(contracts.lpMiningRewards, amount);
+        const simulationResult = await allowanceMethod(Address.fromString(contracts.lpMiningRewards), amount);
 
         if (simulationResult.revert) {
           const errorState: TransactionState = {
@@ -164,6 +166,7 @@ export function useLPMining(): LPMiningState {
         const result = await simulationResult.sendTransaction({
           signer: null,
           mldsaSigner: null,
+          linkMLDSAPublicKeyToAddress: false,
           refundTo: address,
           maximumAllowedSatToSpend: 1_000_000n,
           feeRate: 1,

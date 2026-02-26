@@ -1,16 +1,22 @@
 import type { ReactElement } from 'react';
-import '../../styles/components/spinner.css';
+import { Spinner as BitSpinner } from '@/components/ui/8bit/spinner.js';
+import { cn } from '@/lib/utils.js';
 
 interface SpinnerProps {
   readonly size?: 'sm' | 'md' | 'lg';
 }
 
+const SIZE_CLASSES = {
+  sm: 'size-4',
+  md: 'size-6',
+  lg: 'size-10',
+} as const;
+
 function Spinner({ size = 'md' }: SpinnerProps): ReactElement {
   return (
-    <span
-      className={`spinner spinner--${size}`}
-      role="status"
-      aria-label="Loading"
+    <BitSpinner
+      variant="diamond"
+      className={cn('text-primary', SIZE_CLASSES[size])}
     />
   );
 }

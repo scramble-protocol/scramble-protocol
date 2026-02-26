@@ -2,11 +2,10 @@ import React, { useState, useCallback } from 'react';
 import type { StakingPosition } from '../types/index.js';
 import { PageLayout } from '../components/layout/index.js';
 import { useEggStaking, useEggToken, useWallet } from '../hooks/index.js';
-import { Card, Button, Input, Spinner, TransactionStatus } from '../components/common/index.js';
+import { Card, Button, Input, Spinner, TransactionStatus, OnThePan } from '../components/common/index.js';
 import { FormatService } from '../services/FormatService.js';
-import '../styles/components/stake-page.css';
 
-const TOKEN_DECIMALS = 8;
+const TOKEN_DECIMALS = 18;
 
 function StakingStats({
   position,
@@ -18,39 +17,23 @@ function StakingStats({
   readonly isLoading: boolean;
 }): React.ReactElement {
   return (
-    <div className="stake-page__stats">
-      <div className="vault-stats__grid">
-        <div className="vault-stats__box">
-          <p className="vault-stats__label">Your $EGG Balance</p>
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      {[
+        { label: 'Your $EGG Balance', value: `${FormatService.formatBigIntWithDecimals(eggBalance, TOKEN_DECIMALS, 2)} EGG` },
+        { label: 'Staked', value: `${FormatService.formatBigIntWithDecimals(position?.staked ?? 0n, TOKEN_DECIMALS, 2)} EGG` },
+        { label: 'Pending MOTO Rewards', value: `${FormatService.formatBigIntWithDecimals(position?.pendingRewards ?? 0n, TOKEN_DECIMALS, 4)} MOTO`, highlight: true },
+      ].map((item) => (
+        <div key={item.label} className="rounded-md border border-border bg-card p-3">
+          <p className="text-xs text-muted-foreground">{item.label}</p>
           {isLoading ? (
-            <div className="vault-stats__skeleton" />
+            <div className="mt-2 h-5 w-24 animate-shimmer rounded" />
           ) : (
-            <p className="vault-stats__value">
-              {FormatService.formatBigIntWithDecimals(eggBalance, TOKEN_DECIMALS, 2)} EGG
+            <p className={`mt-1 text-sm font-semibold ${item.highlight === true ? 'text-sizzle' : 'text-foreground'}`}>
+              {item.value}
             </p>
           )}
         </div>
-        <div className="vault-stats__box">
-          <p className="vault-stats__label">Staked</p>
-          {isLoading ? (
-            <div className="vault-stats__skeleton" />
-          ) : (
-            <p className="vault-stats__value">
-              {FormatService.formatBigIntWithDecimals(position?.staked ?? 0n, TOKEN_DECIMALS, 2)} EGG
-            </p>
-          )}
-        </div>
-        <div className="vault-stats__box">
-          <p className="vault-stats__label">Pending MOTO Rewards</p>
-          {isLoading ? (
-            <div className="vault-stats__skeleton" />
-          ) : (
-            <p className="vault-stats__value vault-stats__value--sizzle">
-              {FormatService.formatBigIntWithDecimals(position?.pendingRewards ?? 0n, TOKEN_DECIMALS, 4)} MOTO
-            </p>
-          )}
-        </div>
-      </div>
+      ))}
     </div>
   );
 }
@@ -80,10 +63,10 @@ function StakeForm({
 
   return (
     <Card title="Stake $EGG" subtitle="Stake $EGG to earn 5% of all Spatula harvests. Rewards are paid in MOTO.">
-      <div className="deposit-form">
-        <div className="deposit-form__balance">
-          <span>Available</span>
-          <span className="deposit-form__balance-value">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">Available</span>
+          <span className="font-medium text-foreground">
             {FormatService.formatBigIntWithDecimals(eggBalance, TOKEN_DECIMALS, 4)} EGG
           </span>
         </div>
@@ -97,16 +80,14 @@ function StakeForm({
           onMax={handleMax}
           type="text"
         />
-        <div className="deposit-form__actions">
-          <Button
-            onClick={handleStake}
-            disabled={isLoading || amount === ''}
-            loading={isLoading}
-            fullWidth
-          >
-            Stake
-          </Button>
-        </div>
+        <Button
+          onClick={handleStake}
+          disabled={isLoading || amount === ''}
+          loading={isLoading}
+          fullWidth
+        >
+          Stake
+        </Button>
       </div>
     </Card>
   );
@@ -139,10 +120,10 @@ function UnstakeForm({
 
   return (
     <Card title="Unstake" subtitle="Unstake anytime — no lock-up period">
-      <div className="deposit-form">
-        <div className="deposit-form__balance">
-          <span>Currently Staked</span>
-          <span className="deposit-form__balance-value">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">Currently Staked</span>
+          <span className="font-medium text-foreground">
             {FormatService.formatBigIntWithDecimals(position?.staked ?? 0n, TOKEN_DECIMALS, 4)} EGG
           </span>
         </div>
@@ -156,17 +137,15 @@ function UnstakeForm({
           onMax={handleMax}
           type="text"
         />
-        <div className="deposit-form__actions">
-          <Button
-            onClick={handleUnstake}
-            disabled={isLoading || amount === ''}
-            loading={isLoading}
-            variant="secondary"
-            fullWidth
-          >
-            Unstake
-          </Button>
-        </div>
+        <Button
+          onClick={handleUnstake}
+          disabled={isLoading || amount === ''}
+          loading={isLoading}
+          variant="secondary"
+          fullWidth
+        >
+          Unstake
+        </Button>
       </div>
     </Card>
   );
@@ -183,10 +162,10 @@ function StakingRewards({
 }): React.ReactElement {
   return (
     <Card title="Staking Rewards" glow="sizzle">
-      <div className="stake-page__rewards">
-        <div className="stake-page__reward-row">
-          <span className="stake-page__reward-label">Pending MOTO Rewards</span>
-          <span className="stake-page__reward-value">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">Pending MOTO Rewards</span>
+          <span className="font-semibold text-sizzle">
             {FormatService.formatBigIntWithDecimals(pendingRewards, TOKEN_DECIMALS, 4)} MOTO
           </span>
         </div>
@@ -229,10 +208,10 @@ function StakePage(): React.ReactElement {
   if (!isConnected) {
     return (
       <PageLayout title="Stake $EGG">
-        <div className="stake-page">
-          <div className="stake-page__connect-prompt">
+        <div className="flex flex-col items-center justify-center py-16">
+          <div className="w-full max-w-md">
             <Card title="Stake $EGG">
-              <p className="stake-page__connect-text">
+              <p className="mb-4 text-sm text-muted-foreground">
                 Stake $EGG to earn 5% of all Spatula harvests. Rewards are paid in MOTO — real yield from real protocol activity.
               </p>
               <Button onClick={openConnectModal} fullWidth>
@@ -248,10 +227,8 @@ function StakePage(): React.ReactElement {
   if (staking.isLoading && staking.position === null) {
     return (
       <PageLayout title="Stake $EGG">
-        <div className="stake-page">
-          <div className="stake-page__loading">
-            <Spinner size="lg" />
-          </div>
+        <div className="flex items-center justify-center py-16">
+          <Spinner size="lg" />
         </div>
       </PageLayout>
     );
@@ -259,14 +236,14 @@ function StakePage(): React.ReactElement {
 
   return (
     <PageLayout title="Stake $EGG">
-      <div className="stake-page">
+      <div className="flex flex-col gap-6">
         <StakingStats
           position={staking.position}
           eggBalance={egg.balance}
           isLoading={staking.isLoading || egg.isLoading}
         />
-        <div className="stake-page__grid">
-          <div className="stake-page__left-column">
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="flex flex-col gap-6">
             <StakeForm
               eggBalance={egg.balance}
               onStake={handleStake}
@@ -278,7 +255,7 @@ function StakePage(): React.ReactElement {
               isLoading={staking.isLoading}
             />
           </div>
-          <div className="stake-page__right-column">
+          <div className="flex flex-col gap-6">
             <StakingRewards
               pendingRewards={staking.position?.pendingRewards ?? 0n}
               onClaim={handleClaimRewards}
@@ -287,6 +264,7 @@ function StakePage(): React.ReactElement {
           </div>
         </div>
         <TransactionStatus state={staking.txState} />
+        <OnThePan txState={staking.txState} />
       </div>
     </PageLayout>
   );

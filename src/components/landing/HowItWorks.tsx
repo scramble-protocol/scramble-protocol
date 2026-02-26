@@ -1,5 +1,4 @@
 import React from 'react';
-import '../../styles/components/how-it-works.css';
 
 interface Step {
   readonly icon: string;
@@ -9,19 +8,19 @@ interface Step {
 
 const STEPS: readonly Step[] = [
   {
-    icon: '\u{1F373}',
+    icon: '1',
     title: 'Drop It In',
     description:
-      'Deposit MOTO into The Pan. You receive Shell Token \u2014 your proportional share of the vault.',
+      'Deposit MOTO into The Pan. You receive Shell Token — your proportional share of the vault.',
   },
   {
-    icon: '\u{1F525}',
+    icon: '2',
     title: 'Let It Cook',
     description:
       'The longer you stay, the lower your Yoke Tax. Your Cook Level rises from Raw Egg to Fully Scrambled, boosting rewards up to 2x.',
   },
   {
-    icon: '\u{1F37D}\uFE0F',
+    icon: '3',
     title: 'Get Your Plate',
     description:
       'Withdraw your MOTO plus earned Sizzle rewards. Three yield engines work for you: Spatula farming, Yoke Tax redistribution, and $EGG emissions.',
@@ -30,17 +29,17 @@ const STEPS: readonly Step[] = [
 
 function HowItWorks(): React.ReactElement {
   return (
-    <section className="how-it-works">
-      <div className="how-it-works__inner">
-        <h2 className="how-it-works__heading">How It Works</h2>
-        <div className="how-it-works__cards">
+    <section className="py-16 px-4">
+      <div className="mx-auto max-w-5xl">
+        <h2 className="font-retro text-sm text-center text-primary mb-10">How It Works</h2>
+        <div className="grid gap-6 sm:grid-cols-3">
           {STEPS.map((step: Step): React.ReactElement => (
-            <div key={step.title} className="how-it-works__card">
-              <span className="how-it-works__icon" aria-hidden="true">
+            <div key={step.title} className="flex flex-col items-center gap-4 rounded-md border border-border bg-card p-6 text-center">
+              <span className="flex size-10 items-center justify-center rounded-full border-2 border-primary font-retro text-xs text-primary" aria-hidden="true">
                 {step.icon}
               </span>
-              <h3 className="how-it-works__card-title">{step.title}</h3>
-              <p className="how-it-works__card-desc">{step.description}</p>
+              <h3 className="font-retro text-xs text-foreground">{step.title}</h3>
+              <p className="text-sm text-muted-foreground">{step.description}</p>
             </div>
           ))}
         </div>

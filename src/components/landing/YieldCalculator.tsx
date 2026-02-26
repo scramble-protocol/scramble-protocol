@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import '../../styles/components/yield-calculator.css';
+import { cn } from '@/lib/utils.js';
+import { Slider } from '@/components/ui/8bit/slider.js';
+import { Switch } from '@/components/ui/8bit/switch.js';
+import { Input as BitInput } from '@/components/ui/8bit/input.js';
 
 /* ---- Whitepaper constants ---- */
 
@@ -107,46 +110,53 @@ function YieldCalculator(): React.ReactElement {
   const netAfterTax = totalEstimated * (1 - yokeTaxRate);
 
   return (
-    <section className="yield-calc">
-      <div className="yield-calc__inner">
-        <h2 className="yield-calc__heading">Yield Calculator</h2>
-        <p className="yield-calc__subtitle">
+    <section className="py-16 px-4">
+      <div className="mx-auto max-w-5xl">
+        <h2 className="font-retro text-sm text-center text-primary mb-2">Yield Calculator</h2>
+        <p className="text-center text-sm text-muted-foreground mb-10 max-w-xl mx-auto">
           Estimate your returns before connecting a wallet. All numbers are
           projections based on whitepaper parameters.
         </p>
 
-        <div className="yield-calc__grid">
+        <div className="grid gap-6 md:grid-cols-2">
           {/* ---- Inputs panel ---- */}
-          <div className="yield-calc__inputs">
+          <div className="flex flex-col gap-5 rounded-md border border-border bg-card p-6">
             {/* Deposit amount */}
-            <div className="yield-calc__field">
-              <label className="yield-calc__label" htmlFor="yc-deposit">
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-medium text-muted-foreground" htmlFor="yc-deposit">
                 Deposit Amount
               </label>
-              <div className="yield-calc__input-wrap">
-                <input
+              <div className="relative">
+                <BitInput
                   id="yc-deposit"
-                  className="yield-calc__input"
                   type="text"
                   inputMode="decimal"
                   value={depositStr}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
                     setDepositStr(e.target.value);
                   }}
+                  className="pr-16"
                 />
-                <span className="yield-calc__suffix">MOTO</span>
+                <span className="absolute top-1/2 right-4 -translate-y-1/2 text-xs text-muted-foreground">
+                  MOTO
+                </span>
               </div>
             </div>
 
             {/* Time horizon */}
-            <div className="yield-calc__field">
-              <label className="yield-calc__label">Time Horizon</label>
-              <div className="yield-calc__presets">
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-medium text-muted-foreground">Time Horizon</label>
+              <div className="flex gap-2">
                 {TIME_PRESETS.map((preset: TimePreset, idx: number): React.ReactElement => (
                   <button
                     key={preset.label}
                     type="button"
-                    className={`yield-calc__preset${idx === selectedPresetIdx ? ' yield-calc__preset--active' : ''}`}
+                    className={cn(
+                      'flex-1 rounded-md border px-2 py-1.5 text-xs font-medium transition-colors',
+                      idx === selectedPresetIdx
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border bg-secondary text-muted-foreground hover:text-foreground',
+                    )}
                     onClick={(): void => { setSelectedPresetIdx(idx); }}
                   >
                     {preset.label}
@@ -156,40 +166,30 @@ function YieldCalculator(): React.ReactElement {
             </div>
 
             {/* $EGG Boost toggle */}
-            <div className="yield-calc__field yield-calc__field--row">
-              <label className="yield-calc__label" htmlFor="yc-egg-boost">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-medium text-muted-foreground" htmlFor="yc-egg-boost">
                 $EGG Boost (+0.25x)
               </label>
-              <button
+              <Switch
                 id="yc-egg-boost"
-                type="button"
-                role="switch"
-                aria-checked={eggBoost}
-                className={`yield-calc__toggle${eggBoost ? ' yield-calc__toggle--on' : ''}`}
-                onClick={(): void => { setEggBoost((prev: boolean): boolean => !prev); }}
-              >
-                <span className="yield-calc__toggle-thumb" />
-              </button>
+                checked={eggBoost}
+                onCheckedChange={(checked: boolean): void => { setEggBoost(checked); }}
+              />
             </div>
 
             {/* Spatula APY slider */}
-            <div className="yield-calc__field">
-              <label className="yield-calc__label" htmlFor="yc-spatula-apy">
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-medium text-muted-foreground">
                 Spatula APY Estimate: {String(spatulaApy)}%
               </label>
-              <input
-                id="yc-spatula-apy"
-                className="yield-calc__slider"
-                type="range"
+              <Slider
+                value={[spatulaApy]}
+                onValueChange={(value: number[]): void => { setSpatulaApy(value[0]); }}
                 min={3}
                 max={8}
                 step={0.5}
-                value={spatulaApy}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
-                  setSpatulaApy(Number(e.target.value));
-                }}
               />
-              <div className="yield-calc__slider-labels">
+              <div className="flex justify-between text-xs text-muted-foreground">
                 <span>3%</span>
                 <span>8%</span>
               </div>
@@ -197,70 +197,70 @@ function YieldCalculator(): React.ReactElement {
           </div>
 
           {/* ---- Outputs panel ---- */}
-          <div className="yield-calc__outputs">
-            <div className="yield-calc__result">
-              <span className="yield-calc__result-label">Cook Level</span>
-              <span className="yield-calc__result-value">{cookLevel.name}</span>
+          <div className="flex flex-col gap-3 rounded-md border border-border bg-card p-6">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Cook Level</span>
+              <span className="font-medium text-foreground">{cookLevel.name}</span>
             </div>
 
-            <div className="yield-calc__result">
-              <span className="yield-calc__result-label">Effective Multiplier</span>
-              <span className="yield-calc__result-value yield-calc__result-value--accent">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Effective Multiplier</span>
+              <span className="font-semibold text-primary">
                 {effectiveMultiplier.toFixed(2)}x
               </span>
             </div>
 
-            <div className="yield-calc__result">
-              <span className="yield-calc__result-label">Yoke Tax at Withdrawal</span>
-              <span className="yield-calc__result-value yield-calc__result-value--warning">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Yoke Tax at Withdrawal</span>
+              <span className="font-semibold text-amber-400">
                 {(yokeTaxRate * 100).toFixed(0)}%
               </span>
             </div>
 
-            <div className="yield-calc__divider" />
+            <div className="my-2 border-t border-border" />
 
-            <h3 className="yield-calc__breakdown-heading">Yield Breakdown</h3>
+            <h3 className="font-retro text-xs text-foreground">Yield Breakdown</h3>
 
-            <div className="yield-calc__result">
-              <span className="yield-calc__result-label">Spatula Farming</span>
-              <span className="yield-calc__result-value">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Spatula Farming</span>
+              <span className="font-medium text-foreground">
                 {formatMoto(spatulaYield)} MOTO
               </span>
             </div>
 
-            <div className="yield-calc__result">
-              <span className="yield-calc__result-label">Yoke Tax Redistribution</span>
-              <span className="yield-calc__result-value">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Yoke Tax Redistribution</span>
+              <span className="font-medium text-foreground">
                 {formatMoto(yokeRedistYield)} MOTO
               </span>
             </div>
 
             {blocks <= EGG_EMISSION_BLOCKS && (
-              <div className="yield-calc__result">
-                <span className="yield-calc__result-label">$EGG Emissions</span>
-                <span className="yield-calc__result-value yield-calc__result-value--egg">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">$EGG Emissions</span>
+                <span className="font-medium text-egg">
                   {formatMoto(eggEstimate)} MOTO-equiv
                 </span>
               </div>
             )}
 
-            <div className="yield-calc__divider" />
+            <div className="my-2 border-t border-border" />
 
-            <div className="yield-calc__result yield-calc__result--highlight">
-              <span className="yield-calc__result-label">Total Estimated Return</span>
-              <span className="yield-calc__result-value yield-calc__result-value--large">
+            <div className="flex items-center justify-between rounded-md bg-secondary/50 p-3 text-sm">
+              <span className="text-muted-foreground">Total Estimated Return</span>
+              <span className="text-base font-bold text-foreground">
                 {formatMoto(totalEstimated)} MOTO
               </span>
             </div>
 
-            <div className="yield-calc__result yield-calc__result--final">
-              <span className="yield-calc__result-label">Net After Yoke Tax</span>
-              <span className="yield-calc__result-value yield-calc__result-value--large yield-calc__result-value--accent">
+            <div className="flex items-center justify-between rounded-md bg-primary/10 p-3 text-sm">
+              <span className="text-muted-foreground">Net After Yoke Tax</span>
+              <span className="text-base font-bold text-primary">
                 {formatMoto(netAfterTax)} MOTO
               </span>
             </div>
 
-            <p className="yield-calc__disclaimer">
+            <p className="mt-2 text-xs text-muted-foreground/70">
               Estimates only. Actual returns depend on pool participation, harvest
               frequency, and market conditions.
             </p>

@@ -1,18 +1,16 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { TransactionState, MintStatus } from '../types/index.js';
-import type { CallResult } from 'opnet';
-import { FREE_MINT_ABI } from '../abi/index.js';
 import { getContracts } from '../config/contracts.js';
 import { getNetworkConfig } from '../config/networks.js';
-import { useCustomContract } from './useContract.js';
+import { useOPNetProvider } from './useOPNetProvider.js';
 import { useWallet } from './useWallet.js';
 import { useBlockHeight } from './useBlockHeight.js';
 import { useNetwork } from './useNetwork.js';
 import { isDemoMode } from '../config/demoMode.js';
 import { DEMO_FREE_MINT } from '../config/demoData.js';
+import { callView, callWrite } from '../services/RawContractService.js';
 
-type ContractMethod = (...args: unknown[]) => Promise<CallResult>;
-type ContractMethods = Record<string, ContractMethod>;
+const MAX_CLAIMS = 5000n;
 
 interface FreeMintState {
   readonly mintStatus: MintStatus | null;
@@ -26,9 +24,8 @@ export function useFreeMint(): FreeMintState {
   const { network } = useNetwork();
   const { address, opnetAddress } = useWallet();
   const { blockHeight } = useBlockHeight();
+  const { provider } = useOPNetProvider();
   const contracts = getContracts(network);
-
-  const freeMintContract = useCustomContract(contracts.freeMint, FREE_MINT_ABI);
 
   const [mintStatus, setMintStatus] = useState<MintStatus | null>(null);
   const [canClaim, setCanClaim] = useState<boolean>(false);
@@ -41,37 +38,43 @@ export function useFreeMint(): FreeMintState {
     mountedRef.current = true;
 
     const fetchData = async (): Promise<void> => {
-      if (!freeMintContract || !opnetAddress) {
+      if (!opnetAddress) {
         if (mountedRef.current) {
           setIsLoading(false);
         }
         return;
       }
 
-      const methods = freeMintContract as unknown as ContractMethods;
-
       try {
-        if (methods['getMintStatus']) {
-          const statusResult = await methods['getMintStatus'](opnetAddress);
-          if (mountedRef.current && statusResult && !statusResult.revert) {
-            const props = statusResult.properties as Record<string, boolean | bigint>;
-            setMintStatus({
-              claimed: typeof props['claimed'] === 'boolean' ? props['claimed'] : false,
-              totalClaimed: typeof props['totalClaimed'] === 'bigint' ? props['totalClaimed'] : 0n,
-              maxClaims: typeof props['maxClaims'] === 'bigint' ? props['maxClaims'] : 0n,
-            });
-          }
-        }
+        // Call remaining() to get how many claims are left
+        const remainingResult = await callView(
+          provider,
+          contracts.freeMint,
+          opnetAddress,
+          'remaining',
+        );
 
-        if (methods['canClaim']) {
-          const canClaimResult = await methods['canClaim'](opnetAddress);
-          if (mountedRef.current && canClaimResult && !canClaimResult.revert) {
-            const props = canClaimResult.properties as Record<string, boolean>;
-            setCanClaim(props['canClaim'] ?? false);
-          }
+        let remaining = MAX_CLAIMS;
+        if (remainingResult.result) {
+          remaining = remainingResult.result.readU256();
         }
-      } catch {
-        // Contract calls may fail with placeholder ABIs
+        const totalClaimed = MAX_CLAIMS - remaining;
+
+        // We can't check hasClaimed on-chain (no view method for it),
+        // and simulating claim() fails if the contract lacks EGG balance.
+        // So just enable the button if remaining > 0. If the user already
+        // claimed or the contract has no balance, the real tx will revert
+        // with a clear error message.
+        if (mountedRef.current) {
+          setMintStatus({
+            claimed: false,
+            totalClaimed,
+            maxClaims: MAX_CLAIMS,
+          });
+          setCanClaim(remaining > 0n);
+        }
+      } catch (err) {
+        console.error('[FreeMint] fetchData error:', err);
       }
 
       if (mountedRef.current) {
@@ -84,39 +87,50 @@ export function useFreeMint(): FreeMintState {
     return (): void => {
       mountedRef.current = false;
     };
-  }, [freeMintContract, opnetAddress, blockHeight]);
+  }, [provider, contracts.freeMint, opnetAddress, blockHeight]);
 
   const claim = useCallback(async (): Promise<TransactionState> => {
-    if (!freeMintContract || !address) {
-      return { status: 'error', error: 'Wallet not connected or contract not loaded' };
-    }
-
-    const methods = freeMintContract as unknown as ContractMethods;
-    const claimMethod = methods['claim'];
-
-    if (!claimMethod) {
-      return { status: 'error', error: 'Claim method not found on contract' };
+    if (!address || !opnetAddress) {
+      return { status: 'error', error: 'Wallet not connected' };
     }
 
     try {
-      setTxState({ status: 'simulating' });
-      const simulationResult = await claimMethod();
+      setTxState({ status: 'simulating', message: 'Checking if you can claim...' });
+      const networkConfig = getNetworkConfig(network);
 
-      if (simulationResult.revert) {
+      const callResult = await callWrite(
+        provider,
+        contracts.freeMint,
+        opnetAddress,
+        networkConfig.network,
+        'claim',
+      );
+
+      if (callResult.revert) {
+        const revertMsg = callResult.revert.toString();
         const errorState: TransactionState = {
           status: 'error',
-          error: simulationResult.revert.toString(),
+          error: revertMsg,
         };
         setTxState(errorState);
+
+        // Update claimed state if the revert tells us they already claimed
+        if (revertMsg.toLowerCase().includes('already claimed')) {
+          setMintStatus((prev) =>
+            prev ? { ...prev, claimed: true } : prev,
+          );
+          setCanClaim(false);
+        }
+
         return errorState;
       }
 
-      setTxState({ status: 'signing' });
-      const networkConfig = getNetworkConfig(network);
+      setTxState({ status: 'signing', message: 'Confirm in your wallet to claim 1,000 $EGG.' });
 
-      const result = await simulationResult.sendTransaction({
-        signer: null,
-        mldsaSigner: null,
+      const result = await callResult.sendTransaction({
+          signer: null,
+          mldsaSigner: null,
+        linkMLDSAPublicKeyToAddress: false,
         refundTo: address,
         maximumAllowedSatToSpend: 1_000_000n,
         feeRate: 1,
@@ -124,10 +138,20 @@ export function useFreeMint(): FreeMintState {
         network: networkConfig.network,
       });
 
-      setTxState({ status: 'broadcasting' });
+      setTxState({ status: 'broadcasting', message: 'Sending your claim transaction...' });
+
+      // Optimistically update UI
+      setMintStatus((prev) =>
+        prev
+          ? { ...prev, claimed: true, totalClaimed: prev.totalClaimed + 1n }
+          : prev,
+      );
+      setCanClaim(false);
+
       const confirmedState: TransactionState = {
         status: 'confirmed',
         txId: result.transactionId,
+        message: 'You claimed 1,000 $EGG! Welcome to the kitchen.',
       };
       setTxState(confirmedState);
       return confirmedState;
@@ -137,7 +161,7 @@ export function useFreeMint(): FreeMintState {
       setTxState(errorState);
       return errorState;
     }
-  }, [freeMintContract, address, network]);
+  }, [address, opnetAddress, provider, contracts.freeMint, network]);
 
   if (isDemoMode()) return DEMO_FREE_MINT;
 

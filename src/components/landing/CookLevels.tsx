@@ -1,5 +1,12 @@
 import React from 'react';
-import '../../styles/components/cook-levels.css';
+import { cn } from '@/lib/utils.js';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '@/components/ui/8bit/card.js';
 
 interface CookLevel {
   readonly level: number;
@@ -16,38 +23,35 @@ const LEVELS: readonly CookLevel[] = [
   { level: 4, name: 'Fully Scrambled', multiplier: '2.00x', blocks: '12,960+ (~90+ days)', glow: true },
 ] as const;
 
-const ARROW_POSITIONS: readonly number[] = [1, 2, 3] as const;
-
 function CookLevels(): React.ReactElement {
   return (
-    <section className="cook-levels">
-      <div className="cook-levels__inner">
-        <h2 className="cook-levels__heading">
+    <section className="py-16 px-4">
+      <div className="mx-auto max-w-5xl">
+        <h2 className="font-retro text-sm text-center text-primary mb-10">
           Cook Levels &mdash; The Longer, The Better
         </h2>
-        <div className="cook-levels__track">
-          {ARROW_POSITIONS.map((pos: number): React.ReactElement => (
-            <span
-              key={`arrow-${String(pos)}`}
-              className={`cook-levels__arrow cook-levels__arrow--${String(pos)}`}
-              aria-hidden="true"
-            >
-              &rarr;
-            </span>
-          ))}
+        <div className="grid grid-cols-4 gap-6">
           {LEVELS.map((lv: CookLevel): React.ReactElement => (
-            <div
+            <Card
               key={lv.name}
-              className={`cook-levels__card${lv.glow ? ' cook-levels__card--glow' : ''}`}
+              className={cn(
+                lv.glow && 'border-egg/50 bg-egg/5 shadow-[0_0_20px_rgba(234,179,8,0.15)]',
+              )}
             >
-              <p className="cook-levels__level">Level {String(lv.level)}</p>
-              <p className="cook-levels__name">{lv.name}</p>
-              <p className="cook-levels__multiplier">{lv.multiplier}</p>
-              <p className="cook-levels__blocks">{lv.blocks}</p>
-            </div>
+              <CardHeader className="items-center text-center p-3">
+                <CardDescription className="text-[10px]">
+                  Level {String(lv.level)}
+                </CardDescription>
+                <CardTitle className="text-xs">{lv.name}</CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col items-center gap-1 p-3 pt-0">
+                <p className="text-lg font-bold text-primary">{lv.multiplier}</p>
+                <p className="text-[10px] text-muted-foreground">{lv.blocks}</p>
+              </CardContent>
+            </Card>
           ))}
         </div>
-        <p className="cook-levels__note">
+        <p className="mt-6 text-center text-sm text-muted-foreground">
           Withdrawing resets Cook Level. $EGG boost adds +0.25x. Week 1 bonus
           adds 3x on top.
         </p>

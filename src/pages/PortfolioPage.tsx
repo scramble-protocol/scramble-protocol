@@ -3,9 +3,8 @@ import { PageLayout } from '../components/layout/index.js';
 import { useWallet, useThePan, useEggToken, useEggStaking, useLPMining } from '../hooks/index.js';
 import { Card, Button, Spinner } from '../components/common/index.js';
 import { FormatService } from '../services/FormatService.js';
-import '../styles/components/portfolio-page.css';
 
-const TOKEN_DECIMALS = 8;
+const TOKEN_DECIMALS = 18;
 
 function EarningsSummary({
   vaultClaimed,
@@ -17,31 +16,31 @@ function EarningsSummary({
   readonly farmingClaimed: bigint;
 }): React.ReactElement {
   return (
-    <div className="portfolio-page__earnings">
-      <h2 className="portfolio-page__section-heading">Earnings Summary</h2>
-      <div className="portfolio-page__earnings-grid">
+    <div className="flex flex-col gap-4">
+      <h2 className="font-retro text-xs text-foreground">Earnings Summary</h2>
+      <div className="grid gap-4 sm:grid-cols-3">
         <Card title="Spatula Farming">
-          <div className="portfolio-page__earning-card">
-            <span className="portfolio-page__earning-value">
+          <div className="flex flex-col items-center gap-1 text-center">
+            <span className="text-lg font-bold text-foreground">
               {FormatService.formatBigIntWithDecimals(vaultClaimed, TOKEN_DECIMALS, 4)} MOTO
             </span>
-            <span className="portfolio-page__earning-label">Total Sizzle claimed from The Pan</span>
+            <span className="text-xs text-muted-foreground">Total Sizzle claimed from The Pan</span>
           </div>
         </Card>
         <Card title="Yoke Tax Redistribution">
-          <div className="portfolio-page__earning-card">
-            <span className="portfolio-page__earning-value portfolio-page__earning-value--egg">
+          <div className="flex flex-col items-center gap-1 text-center">
+            <span className="text-lg font-bold text-egg">
               {FormatService.formatBigIntWithDecimals(stakingClaimed, TOKEN_DECIMALS, 4)} MOTO
             </span>
-            <span className="portfolio-page__earning-label">Total MOTO claimed from $EGG staking (5% of harvests)</span>
+            <span className="text-xs text-muted-foreground">Total MOTO claimed from $EGG staking (5% of harvests)</span>
           </div>
         </Card>
         <Card title="$EGG Emissions">
-          <div className="portfolio-page__earning-card">
-            <span className="portfolio-page__earning-value portfolio-page__earning-value--moto">
+          <div className="flex flex-col items-center gap-1 text-center">
+            <span className="text-lg font-bold text-moto">
               {FormatService.formatBigIntWithDecimals(farmingClaimed, TOKEN_DECIMALS, 4)} EGG
             </span>
-            <span className="portfolio-page__earning-label">Total $EGG claimed from $EGG-MOTO LP mining</span>
+            <span className="text-xs text-muted-foreground">Total $EGG claimed from $EGG-MOTO LP mining</span>
           </div>
         </Card>
       </div>
@@ -65,35 +64,33 @@ function YieldBreakdown({
   readonly pendingFarmEgg: bigint;
 }): React.ReactElement {
   return (
-    <div className="portfolio-page__yield">
-      <h2 className="portfolio-page__section-heading">Yield Breakdown</h2>
+    <div className="flex flex-col gap-4">
+      <h2 className="font-retro text-xs text-foreground">Yield Breakdown</h2>
       <Card>
-        <div className="portfolio-page__yield-list">
-          <div className="portfolio-page__yield-row">
-            <span className="portfolio-page__yield-source">Spatula Farming (The Pan)</span>
-            <div className="portfolio-page__yield-details">
+        <div className="flex flex-col divide-y divide-border">
+          <div className="flex items-center justify-between py-3 first:pt-0">
+            <span className="text-sm text-muted-foreground">Spatula Farming (The Pan)</span>
+            <div className="flex flex-col items-end gap-0.5 text-xs">
               <span>Shell Token: {FormatService.formatBigIntWithDecimals(vaultShells, TOKEN_DECIMALS, 4)}</span>
-              <span className="portfolio-page__yield-pending">
+              <span className="text-sizzle">
                 Pending Sizzle: {FormatService.formatBigIntWithDecimals(pendingSizzle, TOKEN_DECIMALS, 4)}
               </span>
             </div>
           </div>
-          <div className="portfolio-page__yield-divider" />
-          <div className="portfolio-page__yield-row">
-            <span className="portfolio-page__yield-source">Yoke Tax Redistribution ($EGG Staking)</span>
-            <div className="portfolio-page__yield-details">
+          <div className="flex items-center justify-between py-3">
+            <span className="text-sm text-muted-foreground">Yoke Tax Redistribution ($EGG Staking)</span>
+            <div className="flex flex-col items-end gap-0.5 text-xs">
               <span>Staked: {FormatService.formatBigIntWithDecimals(eggStaked, TOKEN_DECIMALS, 4)} EGG</span>
-              <span className="portfolio-page__yield-pending">
+              <span className="text-sizzle">
                 Pending MOTO: {FormatService.formatBigIntWithDecimals(pendingStakingRewards, TOKEN_DECIMALS, 4)} MOTO
               </span>
             </div>
           </div>
-          <div className="portfolio-page__yield-divider" />
-          <div className="portfolio-page__yield-row">
-            <span className="portfolio-page__yield-source">$EGG Emissions ($EGG-MOTO LP Mining)</span>
-            <div className="portfolio-page__yield-details">
+          <div className="flex items-center justify-between py-3 last:pb-0">
+            <span className="text-sm text-muted-foreground">$EGG Emissions ($EGG-MOTO LP Mining)</span>
+            <div className="flex flex-col items-end gap-0.5 text-xs">
               <span>$EGG-MOTO LP Staked: {FormatService.formatBigIntWithDecimals(lpStaked, TOKEN_DECIMALS, 4)}</span>
-              <span className="portfolio-page__yield-pending">
+              <span className="text-egg">
                 Pending $EGG: {FormatService.formatBigIntWithDecimals(pendingFarmEgg, TOKEN_DECIMALS, 4)}
               </span>
             </div>
@@ -106,22 +103,22 @@ function YieldBreakdown({
 
 function TransactionHistory(): React.ReactElement {
   return (
-    <div className="portfolio-page__history">
-      <h2 className="portfolio-page__section-heading">Transaction History</h2>
+    <div className="flex flex-col gap-4">
+      <h2 className="font-retro text-xs text-foreground">Transaction History</h2>
       <Card>
-        <div className="portfolio-page__table-wrapper">
-          <table className="portfolio-page__table">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
             <thead>
-              <tr>
-                <th className="portfolio-page__th">Type</th>
-                <th className="portfolio-page__th">Amount</th>
-                <th className="portfolio-page__th">Date</th>
-                <th className="portfolio-page__th">TX ID</th>
+              <tr className="border-b border-border">
+                <th className="pb-2 text-left text-xs font-medium text-muted-foreground">Type</th>
+                <th className="pb-2 text-left text-xs font-medium text-muted-foreground">Amount</th>
+                <th className="pb-2 text-left text-xs font-medium text-muted-foreground">Date</th>
+                <th className="pb-2 text-left text-xs font-medium text-muted-foreground">TX ID</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td className="portfolio-page__td portfolio-page__td--empty" colSpan={4}>
+                <td className="py-4 text-center text-muted-foreground" colSpan={4}>
                   No transactions yet
                 </td>
               </tr>
@@ -145,10 +142,10 @@ function PortfolioPage(): React.ReactElement {
   if (!isConnected) {
     return (
       <PageLayout title="Portfolio">
-        <div className="portfolio-page">
-          <div className="portfolio-page__connect-prompt">
+        <div className="flex flex-col items-center justify-center py-16">
+          <div className="w-full max-w-md">
             <Card title="Portfolio">
-              <p className="portfolio-page__connect-text">
+              <p className="mb-4 text-sm text-muted-foreground">
                 Connect your wallet to view your portfolio.
               </p>
               <Button onClick={openConnectModal} fullWidth>
@@ -164,10 +161,8 @@ function PortfolioPage(): React.ReactElement {
   if (isLoading && pan.position === null && staking.position === null && farming.position === null) {
     return (
       <PageLayout title="Portfolio">
-        <div className="portfolio-page">
-          <div className="portfolio-page__loading">
-            <Spinner size="lg" />
-          </div>
+        <div className="flex items-center justify-center py-16">
+          <Spinner size="lg" />
         </div>
       </PageLayout>
     );
@@ -175,7 +170,7 @@ function PortfolioPage(): React.ReactElement {
 
   return (
     <PageLayout title="Portfolio">
-      <div className="portfolio-page">
+      <div className="flex flex-col gap-8">
         <EarningsSummary
           vaultClaimed={0n}
           stakingClaimed={0n}

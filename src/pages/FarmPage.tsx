@@ -4,9 +4,8 @@ import { PageLayout } from '../components/layout/index.js';
 import { useLPMining, useWallet, useBlockHeight } from '../hooks/index.js';
 import { Card, Button, Input, Spinner, TransactionStatus } from '../components/common/index.js';
 import { FormatService } from '../services/FormatService.js';
-import '../styles/components/farm-page.css';
 
-const TOKEN_DECIMALS = 8;
+const TOKEN_DECIMALS = 18;
 
 function EmissionChart({
   position,
@@ -18,40 +17,26 @@ function EmissionChart({
   readonly isLoading: boolean;
 }): React.ReactElement {
   return (
-    <div className="farm-page__emission">
-      <Card title="$EGG-MOTO LP Mining Emissions">
-        <div className="farm-page__emission-grid">
-          <div className="farm-page__emission-item">
-            <span className="farm-page__emission-label">Current Block</span>
+    <Card title="$EGG-MOTO LP Mining Emissions">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {[
+          { label: 'Current Block', value: blockHeight.toString() },
+          { label: 'Your $EGG-MOTO LP Staked', value: `${FormatService.formatBigIntWithDecimals(position?.staked ?? 0n, TOKEN_DECIMALS, 4)} LP` },
+          { label: 'Pending $EGG', value: `${FormatService.formatBigIntWithDecimals(position?.pendingEgg ?? 0n, TOKEN_DECIMALS, 4)} EGG`, highlight: true },
+        ].map((item) => (
+          <div key={item.label} className="flex flex-col gap-1">
+            <span className="text-xs text-muted-foreground">{item.label}</span>
             {isLoading ? (
-              <div className="vault-stats__skeleton" />
+              <div className="h-5 w-24 animate-shimmer rounded" />
             ) : (
-              <span className="farm-page__emission-value">{blockHeight.toString()}</span>
-            )}
-          </div>
-          <div className="farm-page__emission-item">
-            <span className="farm-page__emission-label">Your $EGG-MOTO LP Staked</span>
-            {isLoading ? (
-              <div className="vault-stats__skeleton" />
-            ) : (
-              <span className="farm-page__emission-value">
-                {FormatService.formatBigIntWithDecimals(position?.staked ?? 0n, TOKEN_DECIMALS, 4)} LP
+              <span className={`text-sm font-semibold ${item.highlight === true ? 'text-egg' : 'text-foreground'}`}>
+                {item.value}
               </span>
             )}
           </div>
-          <div className="farm-page__emission-item">
-            <span className="farm-page__emission-label">Pending $EGG</span>
-            {isLoading ? (
-              <div className="vault-stats__skeleton" />
-            ) : (
-              <span className="farm-page__emission-value farm-page__emission-value--egg">
-                {FormatService.formatBigIntWithDecimals(position?.pendingEgg ?? 0n, TOKEN_DECIMALS, 4)} EGG
-              </span>
-            )}
-          </div>
-        </div>
-      </Card>
-    </div>
+        ))}
+      </div>
+    </Card>
   );
 }
 
@@ -74,7 +59,7 @@ function LPStake({
 
   return (
     <Card title="Stake $EGG-MOTO LP" subtitle="Stake $EGG-MOTO LP tokens to earn $EGG rewards over ~52,560 blocks (~12 months)">
-      <div className="lp-stake">
+      <div className="flex flex-col gap-4">
         <Input
           label="LP Amount"
           value={amount}
@@ -83,16 +68,14 @@ function LPStake({
           suffix="LP"
           type="text"
         />
-        <div className="lp-stake__actions">
-          <Button
-            onClick={handleStake}
-            disabled={isLoading || amount === ''}
-            loading={isLoading}
-            fullWidth
-          >
-            Stake LP
-          </Button>
-        </div>
+        <Button
+          onClick={handleStake}
+          disabled={isLoading || amount === ''}
+          loading={isLoading}
+          fullWidth
+        >
+          Stake LP
+        </Button>
       </div>
     </Card>
   );
@@ -125,10 +108,10 @@ function LPUnstake({
 
   return (
     <Card title="Unstake $EGG-MOTO LP" subtitle="Remove your staked LP tokens">
-      <div className="lp-unstake">
-        <div className="lp-unstake__balance">
-          <span className="lp-unstake__balance-label">Currently Staked</span>
-          <span className="lp-unstake__balance-value">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">Currently Staked</span>
+          <span className="font-medium text-foreground">
             {FormatService.formatBigIntWithDecimals(position?.staked ?? 0n, TOKEN_DECIMALS, 4)} LP
           </span>
         </div>
@@ -142,17 +125,15 @@ function LPUnstake({
           onMax={handleMax}
           type="text"
         />
-        <div className="lp-unstake__actions">
-          <Button
-            onClick={handleUnstake}
-            disabled={isLoading || amount === ''}
-            loading={isLoading}
-            variant="secondary"
-            fullWidth
-          >
-            Unstake LP
-          </Button>
-        </div>
+        <Button
+          onClick={handleUnstake}
+          disabled={isLoading || amount === ''}
+          loading={isLoading}
+          variant="secondary"
+          fullWidth
+        >
+          Unstake LP
+        </Button>
       </div>
     </Card>
   );
@@ -169,10 +150,10 @@ function FarmRewards({
 }): React.ReactElement {
   return (
     <Card title="Farm Rewards" glow="egg">
-      <div className="farm-page__rewards">
-        <div className="farm-page__reward-row">
-          <span className="farm-page__reward-label">Pending $EGG</span>
-          <span className="farm-page__reward-value">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">Pending $EGG</span>
+          <span className="font-semibold text-egg">
             {FormatService.formatBigIntWithDecimals(pendingEgg, TOKEN_DECIMALS, 4)} EGG
           </span>
         </div>
@@ -215,10 +196,10 @@ function FarmPage(): React.ReactElement {
   if (!isConnected) {
     return (
       <PageLayout title="LP Mining">
-        <div className="farm-page">
-          <div className="farm-page__connect-prompt">
+        <div className="flex flex-col items-center justify-center py-16">
+          <div className="w-full max-w-md">
             <Card title="LP Mining">
-              <p className="farm-page__connect-text">
+              <p className="mb-4 text-sm text-muted-foreground">
                 Stake $EGG-MOTO LP tokens to earn $EGG rewards over ~52,560 blocks (~12 months) following a decay curve. After emissions end, the contract remains for unstaking but no new rewards are distributed.
               </p>
               <Button onClick={openConnectModal} fullWidth>
@@ -234,10 +215,8 @@ function FarmPage(): React.ReactElement {
   if (farming.isLoading && farming.position === null) {
     return (
       <PageLayout title="LP Mining">
-        <div className="farm-page">
-          <div className="farm-page__loading">
-            <Spinner size="lg" />
-          </div>
+        <div className="flex items-center justify-center py-16">
+          <Spinner size="lg" />
         </div>
       </PageLayout>
     );
@@ -245,14 +224,14 @@ function FarmPage(): React.ReactElement {
 
   return (
     <PageLayout title="LP Mining">
-      <div className="farm-page">
+      <div className="flex flex-col gap-6">
         <EmissionChart
           position={farming.position}
           blockHeight={blockHeight}
           isLoading={farming.isLoading}
         />
-        <div className="farm-page__grid">
-          <div className="farm-page__left-column">
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="flex flex-col gap-6">
             <LPStake onStakeLP={handleStakeLP} isLoading={farming.isLoading} />
             <LPUnstake
               position={farming.position}
@@ -260,7 +239,7 @@ function FarmPage(): React.ReactElement {
               isLoading={farming.isLoading}
             />
           </div>
-          <div className="farm-page__right-column">
+          <div className="flex flex-col gap-6">
             <FarmRewards
               pendingEgg={farming.position?.pendingEgg ?? 0n}
               onClaim={handleClaimRewards}

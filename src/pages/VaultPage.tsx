@@ -4,9 +4,8 @@ import { PageLayout } from '../components/layout/index.js';
 import { useThePan, useWallet, useBlockHeight, useEggToken } from '../hooks/index.js';
 import { Card, Button, Input, Spinner, TransactionStatus, Badge } from '../components/common/index.js';
 import { FormatService } from '../services/FormatService.js';
-import '../styles/components/vault-page.css';
 
-const TOKEN_DECIMALS = 8;
+const TOKEN_DECIMALS = 18;
 
 function calculateYokeTaxPercent(
   depositBlock: bigint,
@@ -36,49 +35,24 @@ function VaultStatsSection({
   readonly isLoading: boolean;
 }): React.ReactElement {
   return (
-    <div className="vault-page__stats">
-      <div className="vault-stats__grid">
-        <div className="vault-stats__box">
-          <p className="vault-stats__label">TVL</p>
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      {[
+        { label: 'TVL', value: `${FormatService.formatBigIntWithDecimals(stats?.tvl ?? 0n, TOKEN_DECIMALS, 2)} MOTO` },
+        { label: 'Total Shell Token', value: FormatService.formatBigIntWithDecimals(stats?.totalShells ?? 0n, TOKEN_DECIMALS, 2) },
+        { label: 'Butter Level', value: FormatService.formatBigIntWithDecimals(stats?.butterLevel ?? 0n, TOKEN_DECIMALS, 2) },
+        { label: 'Sizzle Rate', value: FormatService.formatBigIntWithDecimals(stats?.sizzleRate ?? 0n, TOKEN_DECIMALS, 4), highlight: true },
+      ].map((item) => (
+        <div key={item.label} className="rounded-md border border-border bg-card p-3">
+          <p className="text-xs text-muted-foreground">{item.label}</p>
           {isLoading ? (
-            <div className="vault-stats__skeleton" />
+            <div className="mt-2 h-5 w-24 animate-shimmer rounded" />
           ) : (
-            <p className="vault-stats__value">
-              {FormatService.formatBigIntWithDecimals(stats?.tvl ?? 0n, TOKEN_DECIMALS, 2)} MOTO
+            <p className={`mt-1 text-sm font-semibold ${item.highlight === true ? 'text-sizzle' : 'text-foreground'}`}>
+              {item.value}
             </p>
           )}
         </div>
-        <div className="vault-stats__box">
-          <p className="vault-stats__label">Total Shell Token</p>
-          {isLoading ? (
-            <div className="vault-stats__skeleton" />
-          ) : (
-            <p className="vault-stats__value">
-              {FormatService.formatBigIntWithDecimals(stats?.totalShells ?? 0n, TOKEN_DECIMALS, 2)}
-            </p>
-          )}
-        </div>
-        <div className="vault-stats__box">
-          <p className="vault-stats__label">Butter Level</p>
-          {isLoading ? (
-            <div className="vault-stats__skeleton" />
-          ) : (
-            <p className="vault-stats__value">
-              {FormatService.formatBigIntWithDecimals(stats?.butterLevel ?? 0n, TOKEN_DECIMALS, 2)}
-            </p>
-          )}
-        </div>
-        <div className="vault-stats__box">
-          <p className="vault-stats__label">Sizzle Rate</p>
-          {isLoading ? (
-            <div className="vault-stats__skeleton" />
-          ) : (
-            <p className="vault-stats__value vault-stats__value--sizzle">
-              {FormatService.formatBigIntWithDecimals(stats?.sizzleRate ?? 0n, TOKEN_DECIMALS, 4)}
-            </p>
-          )}
-        </div>
-      </div>
+      ))}
     </div>
   );
 }
@@ -102,7 +76,7 @@ function DepositForm({
 
   return (
     <Card title="Deposit MOTO" subtitle="Deposit MOTO into The Pan to receive Shell Token — your proportional share of the vault.">
-      <div className="deposit-form">
+      <div className="flex flex-col gap-4">
         <Input
           label="Amount"
           value={amount}
@@ -111,16 +85,14 @@ function DepositForm({
           suffix="MOTO"
           type="text"
         />
-        <div className="deposit-form__actions">
-          <Button
-            onClick={handleDeposit}
-            disabled={isLoading || amount === ''}
-            loading={isLoading}
-            fullWidth
-          >
-            Deposit
-          </Button>
-        </div>
+        <Button
+          onClick={handleDeposit}
+          disabled={isLoading || amount === ''}
+          loading={isLoading}
+          fullWidth
+        >
+          Deposit
+        </Button>
       </div>
     </Card>
   );
@@ -159,10 +131,10 @@ function WithdrawForm({
 
   return (
     <Card title="Withdraw" subtitle="Return Shell Token to withdraw MOTO. Yoke Tax applies based on blocks since deposit.">
-      <div className="deposit-form">
-        <div className="deposit-form__balance">
-          <span>Your Shell Token</span>
-          <span className="deposit-form__balance-value">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">Your Shell Token</span>
+          <span className="font-medium text-foreground">
             {FormatService.formatBigIntWithDecimals(position?.shells ?? 0n, TOKEN_DECIMALS, 4)}
           </span>
         </div>
@@ -176,21 +148,19 @@ function WithdrawForm({
           onMax={handleMax}
           type="text"
         />
-        <div className="deposit-form__estimate">
-          <span className="deposit-form__estimate-label">Yoke Tax</span>
-          <span className="deposit-form__estimate-value">{String(yokeTax)}%</span>
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">Yoke Tax</span>
+          <span className="font-medium text-sizzle">{String(yokeTax)}%</span>
         </div>
-        <div className="deposit-form__actions">
-          <Button
-            onClick={handleWithdraw}
-            disabled={isLoading || shares === ''}
-            loading={isLoading}
-            variant="secondary"
-            fullWidth
-          >
-            Withdraw
-          </Button>
-        </div>
+        <Button
+          onClick={handleWithdraw}
+          disabled={isLoading || shares === ''}
+          loading={isLoading}
+          variant="secondary"
+          fullWidth
+        >
+          Withdraw
+        </Button>
       </div>
     </Card>
   );
@@ -207,10 +177,10 @@ function SizzleClaim({
 }): React.ReactElement {
   return (
     <Card title="Sizzle Rewards" glow="sizzle">
-      <div className="vault-page__sizzle-claim">
-        <div className="vault-page__reward-row">
-          <span className="vault-page__reward-label">Pending Sizzle</span>
-          <span className="vault-page__reward-value vault-page__reward-value--sizzle">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">Pending Sizzle</span>
+          <span className="font-semibold text-sizzle">
             {FormatService.formatBigIntWithDecimals(pendingSizzle, TOKEN_DECIMALS, 4)}
           </span>
         </div>
@@ -257,16 +227,16 @@ function EggBoostSection({
 
   return (
     <Card title="$EGG Boost" subtitle="Deposit $EGG alongside your Pan deposit for +0.25x Cook Level bonus." glow="egg">
-      <div className="vault-page__egg-boost">
-        <div className="vault-page__reward-row">
-          <span className="vault-page__reward-label">Current Boost</span>
-          <span className="vault-page__reward-value vault-page__reward-value--egg">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">Current Boost</span>
+          <span className="font-semibold text-egg">
             {FormatService.formatBigIntWithDecimals(eggBoost, TOKEN_DECIMALS, 4)} EGG
           </span>
         </div>
-        <div className="vault-page__reward-row">
-          <span className="vault-page__reward-label">Wallet Balance</span>
-          <span className="vault-page__reward-value">
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">Wallet Balance</span>
+          <span className="font-medium text-foreground">
             {FormatService.formatBigIntWithDecimals(eggBalance, TOKEN_DECIMALS, 4)} EGG
           </span>
         </div>
@@ -280,7 +250,7 @@ function EggBoostSection({
           onMax={handleMax}
           type="text"
         />
-        <div className="vault-page__boost-actions">
+        <div className="flex gap-2">
           <Button
             onClick={handleDepositBoost}
             disabled={isLoading || boostAmount === ''}
@@ -319,16 +289,14 @@ function CookLevelDisplay({
 
   return (
     <Card title="Cook Level">
-      <div className="vault-page__cook-level">
-        <div className="vault-page__cook-level-badge">
-          <Badge variant={cookLevel >= 3 ? 'egg' : 'info'}>
-            Level {String(cookLevel)}
-          </Badge>
-        </div>
-        <p className="vault-page__cook-level-name">{levelName}</p>
-        <div className="vault-page__cook-level-detail">
-          <span className="vault-page__cook-level-label">Blocks deposited</span>
-          <span className="vault-page__cook-level-value">{blocksSinceDeposit.toString()}</span>
+      <div className="flex flex-col items-center gap-3 text-center">
+        <Badge variant={cookLevel >= 3 ? 'egg' : 'info'}>
+          Level {String(cookLevel)}
+        </Badge>
+        <p className="font-retro text-xs text-foreground">{levelName}</p>
+        <div className="flex items-center justify-between w-full text-sm">
+          <span className="text-muted-foreground">Blocks deposited</span>
+          <span className="font-medium text-foreground">{blocksSinceDeposit.toString()}</span>
         </div>
       </div>
     </Card>
@@ -373,10 +341,10 @@ function VaultPage(): React.ReactElement {
   if (!isConnected) {
     return (
       <PageLayout title="The Pan">
-        <div className="vault-page">
-          <div className="vault-page__connect-prompt">
+        <div className="flex flex-col items-center justify-center py-16">
+          <div className="w-full max-w-md">
             <Card title="The Pan">
-              <p className="vault-page__connect-text">
+              <p className="mb-4 text-sm text-muted-foreground">
                 Connect your wallet to access The Pan vault.
               </p>
               <Button onClick={openConnectModal} fullWidth>
@@ -392,10 +360,8 @@ function VaultPage(): React.ReactElement {
   if (pan.isLoading && pan.stats === null) {
     return (
       <PageLayout title="The Pan">
-        <div className="vault-page">
-          <div className="vault-page__loading">
-            <Spinner size="lg" />
-          </div>
+        <div className="flex items-center justify-center py-16">
+          <Spinner size="lg" />
         </div>
       </PageLayout>
     );
@@ -403,10 +369,10 @@ function VaultPage(): React.ReactElement {
 
   return (
     <PageLayout title="The Pan">
-      <div className="vault-page">
+      <div className="flex flex-col gap-6">
         <VaultStatsSection stats={pan.stats} isLoading={pan.isLoading} />
-        <div className="vault-page__grid">
-          <div className="vault-page__left-column">
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="flex flex-col gap-6">
             <DepositForm onDeposit={handleDeposit} isLoading={pan.isLoading} />
             <WithdrawForm
               position={pan.position}
@@ -415,7 +381,7 @@ function VaultPage(): React.ReactElement {
               isLoading={pan.isLoading}
             />
           </div>
-          <div className="vault-page__right-column">
+          <div className="flex flex-col gap-6">
             <SizzleClaim
               pendingSizzle={pan.position?.pendingSizzle ?? 0n}
               onClaim={handleClaimSizzle}

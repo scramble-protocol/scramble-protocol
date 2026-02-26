@@ -1,58 +1,51 @@
 import React from 'react';
-import '../../styles/components/tokenomics.css';
+import EnemyHealthDisplay from '@/components/ui/8bit/enemy-health-display.js';
 
 interface Allocation {
-  readonly label: string;
+  readonly name: string;
+  readonly detail: string;
   readonly percentage: number;
-  readonly variant: string;
+  readonly barColor: string;
+  readonly nameColor: string;
 }
 
 const ALLOCATIONS: readonly Allocation[] = [
-  { label: 'Launch LP Raise (35,000,000) \u2014 LBP \u2014 3 day event', percentage: 35, variant: 'vault' },
-  { label: 'Pan Incentives (20,000,000) \u2014 ~52,560 block decay + Week 1 3x bonus', percentage: 20, variant: 'lp' },
-  { label: 'Team / Development (12,000,000) \u2014 ~25,920 block cliff, ~77,760 block vest', percentage: 12, variant: 'mint' },
-  { label: 'LP Mining (10,000,000) \u2014 $EGG-MOTO liquidity rewards', percentage: 10, variant: 'staking' },
-  { label: 'Protocol-Owned Liquidity (10,000,000) \u2014 Paired with MOTO, locked permanently', percentage: 10, variant: 'reserve' },
-  { label: 'Treasury (8,000,000) \u2014 Governance-controlled', percentage: 8, variant: 'vault' },
-  { label: 'Free Mint (5,000,000) \u2014 1,000 per wallet, first 5,000', percentage: 5, variant: 'mint' },
+  { name: 'Launch LP Raise', detail: '35,000,000 — LBP — 3 day event', percentage: 35, barColor: 'bg-primary', nameColor: 'text-primary' },
+  { name: 'Pan Incentives', detail: '20,000,000 — ~52,560 block decay + Week 1 3x bonus', percentage: 20, barColor: 'bg-sizzle', nameColor: 'text-sizzle' },
+  { name: 'Team / Dev', detail: '12,000,000 — ~25,920 block cliff, ~77,760 block vest', percentage: 12, barColor: 'bg-egg', nameColor: 'text-egg' },
+  { name: 'LP Mining', detail: '10,000,000 — $EGG-MOTO liquidity rewards', percentage: 10, barColor: 'bg-moto', nameColor: 'text-moto' },
+  { name: 'Protocol Liquidity', detail: '10,000,000 — Paired with MOTO, locked permanently', percentage: 10, barColor: 'bg-emerald-500', nameColor: 'text-emerald-400' },
+  { name: 'Treasury', detail: '8,000,000 — Governance-controlled', percentage: 8, barColor: 'bg-violet-500', nameColor: 'text-violet-400' },
+  { name: 'Free Mint', detail: '5,000,000 — 1,000 per wallet, first 5,000', percentage: 5, barColor: 'bg-rose-400', nameColor: 'text-rose-400' },
 ] as const;
 
 const TOTAL_SUPPLY = '100,000,000';
 
 function Tokenomics(): React.ReactElement {
   return (
-    <section className="tokenomics">
-      <div className="tokenomics__inner">
-        <h2 className="tokenomics__heading">$EGG Token Distribution</h2>
-        <p className="tokenomics__supply">
+    <section className="py-16 px-4">
+      <div className="mx-auto max-w-3xl">
+        <h2 className="font-retro text-sm text-center text-primary mb-2">$EGG Token Distribution</h2>
+        <p className="text-center text-sm text-muted-foreground mb-10">
           Total supply:{' '}
-          <span className="tokenomics__supply-value">
-            {TOTAL_SUPPLY} $EGG
-          </span>
+          <span className="font-semibold text-foreground">{TOTAL_SUPPLY} $EGG</span>
         </p>
-        <div className="tokenomics__allocations">
+        <div className="flex flex-col gap-5">
           {ALLOCATIONS.map(
             (alloc: Allocation): React.ReactElement => (
-              <div key={alloc.label} className="tokenomics__row">
-                <div className="tokenomics__row-header">
-                  <p className="tokenomics__label">{alloc.label}</p>
-                  <p
-                    className={`tokenomics__percentage tokenomics__percentage--${alloc.variant}`}
-                  >
-                    {String(alloc.percentage)}%
-                  </p>
-                </div>
-                <div className="tokenomics__bar-track">
-                  <div
-                    className={`tokenomics__bar-fill tokenomics__bar-fill--${alloc.variant}`}
-                    style={{ width: `${String(alloc.percentage)}%` }}
-                    role="meter"
-                    aria-valuenow={alloc.percentage}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-label={`${alloc.label}: ${String(alloc.percentage)}%`}
-                  />
-                </div>
+              <div key={alloc.name} className="flex flex-col gap-1">
+                <EnemyHealthDisplay
+                  enemyName={alloc.name}
+                  currentHealth={alloc.percentage}
+                  maxHealth={100}
+                  showLevel={false}
+                  showHealthText
+                  healthBarVariant="retro"
+                  healthBarColor={alloc.barColor}
+                  enemyNameColor={alloc.nameColor}
+                  size="sm"
+                />
+                <p className="text-xs text-muted-foreground/70 pl-0.5">{alloc.detail}</p>
               </div>
             ),
           )}
