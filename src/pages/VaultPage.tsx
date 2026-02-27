@@ -2,8 +2,17 @@ import React, { useState, useCallback } from 'react';
 import type { VaultPosition, VaultStats } from '../types/index.js';
 import { PageLayout } from '../components/layout/index.js';
 import { useThePan, useWallet, useBlockHeight, useEggToken } from '../hooks/index.js';
-import { Card, Button, Input, Spinner, TransactionStatus, Badge } from '../components/common/index.js';
+import { Card, Button, Input, Spinner, Badge, CookingProgress, OnThePan, type CookingStep } from '../components/common/index.js';
 import { FormatService } from '../services/FormatService.js';
+
+const PAN_STEPS: readonly CookingStep[] = [
+  { id: 'approving', label: 'Greasing', description: 'Greasing the pan... Confirm approval in your wallet.' },
+  { id: 'confirming', label: 'Preheating', description: 'Waiting for approval to bake into a Bitcoin block...' },
+  { id: 'simulating', label: 'Heating Up', description: 'Warming the pan...' },
+  { id: 'signing', label: 'Flipping', description: 'Flip that egg! Confirm in your wallet.' },
+  { id: 'broadcasting', label: 'Sizzling', description: 'Your MOTO is sizzling on the pan!' },
+  { id: 'confirmed', label: 'Plated', description: 'MOTO deposited. The kitchen is cooking!' },
+];
 
 const TOKEN_DECIMALS = 18;
 
@@ -401,7 +410,15 @@ function VaultPage(): React.ReactElement {
             />
           </div>
         </div>
-        <TransactionStatus state={pan.txState} />
+        <CookingProgress
+          status={pan.txState.status}
+          txId={pan.txState.txId}
+          error={pan.txState.error}
+          message={pan.txState.message}
+          steps={PAN_STEPS}
+          successMessage="Your MOTO is in the pan. Shell tokens served!"
+        />
+        <OnThePan txState={pan.txState} />
       </div>
     </PageLayout>
   );

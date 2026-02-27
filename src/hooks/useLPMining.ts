@@ -31,7 +31,7 @@ export function useLPMining(): LPMiningState {
   const contracts = getContracts(network);
 
   const lpMiningContract = useCustomContract(contracts.lpMiningRewards, LP_MINING_REWARDS_ABI);
-  const lpTokenContract = useOP20Contract(contracts.motoSwapRouter);
+  const lpTokenContract = useOP20Contract(contracts.lpToken);
 
   const [position, setPosition] = useState<FarmPosition | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -53,18 +53,18 @@ export function useLPMining(): LPMiningState {
       const methods = lpMiningContract as unknown as ContractMethods;
 
       try {
-        if (methods['getPosition']) {
-          const posResult = await methods['getPosition'](opnetAddress);
-          if (mountedRef.current && posResult && !posResult.revert) {
-            const props = posResult.properties as Record<string, bigint>;
-            setPosition({
-              staked: props['staked'] ?? 0n,
-              pendingEgg: props['pendingEgg'] ?? 0n,
-            });
-          }
+        const [stakedResult, pendingResult] = await Promise.all([
+          methods['stakedBalance'](opnetAddress),
+          methods['pendingReward'](opnetAddress),
+        ]);
+
+        if (mountedRef.current) {
+          const staked = (stakedResult.properties as Record<string, bigint>)['balance'] ?? 0n;
+          const pendingEgg = (pendingResult.properties as Record<string, bigint>)['pending'] ?? 0n;
+          setPosition({ staked, pendingEgg });
         }
-      } catch {
-        // Contract calls may fail with placeholder ABIs
+      } catch (err) {
+        console.error('[LPMining] fetchData error:', err);
       }
 
       if (mountedRef.current) {
@@ -196,20 +196,20 @@ export function useLPMining(): LPMiningState {
         return approvalResult;
       }
 
-      return executeTransaction('stakeLP', [amount]);
+      return executeTransaction('stake', [amount]);
     },
     [approveLPToken, executeTransaction],
   );
 
   const unstakeLP = useCallback(
     async (amount: bigint): Promise<TransactionState> => {
-      return executeTransaction('unstakeLP', [amount]);
+      return executeTransaction('unstake', [amount]);
     },
     [executeTransaction],
   );
 
   const claimRewards = useCallback(async (): Promise<TransactionState> => {
-    return executeTransaction('claimRewards', []);
+    return executeTransaction('claimReward', []);
   }, [executeTransaction]);
 
   if (isDemoMode()) return DEMO_LP_MINING;

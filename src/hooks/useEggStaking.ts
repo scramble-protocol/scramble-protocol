@@ -2,16 +2,16 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import type { TransactionState, StakingPosition } from '../types/index.js';
 import type { CallResult } from 'opnet';
 import { Address } from '@btc-vision/transaction';
+import { EGG_STAKING_ABI } from '../abi/index.js';
 import { getContracts } from '../config/contracts.js';
 import { getNetworkConfig } from '../config/networks.js';
-import { useOP20Contract } from './useContract.js';
+import { useCustomContract, useOP20Contract } from './useContract.js';
 import { useOPNetProvider } from './useOPNetProvider.js';
 import { useWallet } from './useWallet.js';
 import { useBlockHeight } from './useBlockHeight.js';
 import { useNetwork } from './useNetwork.js';
 import { isDemoMode } from '../config/demoMode.js';
 import { DEMO_EGG_STAKING } from '../config/demoData.js';
-import { callView, callWrite, BinaryWriter } from '../services/RawContractService.js';
 
 type ContractMethod = (...args: unknown[]) => Promise<CallResult>;
 type ContractMethods = Record<string, ContractMethod>;
@@ -32,6 +32,7 @@ export function useEggStaking(): EggStakingState {
   const { provider } = useOPNetProvider();
   const contracts = getContracts(network);
 
+  const stakingContract = useCustomContract(contracts.eggStaking, EGG_STAKING_ABI);
   const eggContract = useOP20Contract(contracts.eggToken);
 
   const [position, setPosition] = useState<StakingPosition | null>(null);
@@ -44,35 +45,25 @@ export function useEggStaking(): EggStakingState {
     mountedRef.current = true;
 
     const fetchData = async (): Promise<void> => {
-      if (!opnetAddress) {
+      if (!stakingContract || !opnetAddress) {
         if (mountedRef.current) {
           setIsLoading(false);
         }
         return;
       }
 
+      const methods = stakingContract as unknown as ContractMethods;
+
       try {
         console.log('[EggStaking] fetching stakedBalance + pendingReward for', opnetAddress.toString());
         const [stakedResult, pendingResult] = await Promise.all([
-          callView(
-            provider,
-            contracts.eggStaking,
-            opnetAddress,
-            'stakedBalance',
-            (w: BinaryWriter) => w.writeAddress(opnetAddress),
-          ),
-          callView(
-            provider,
-            contracts.eggStaking,
-            opnetAddress,
-            'pendingReward',
-            (w: BinaryWriter) => w.writeAddress(opnetAddress),
-          ),
+          methods['stakedBalance'](opnetAddress),
+          methods['pendingReward'](opnetAddress),
         ]);
 
         if (mountedRef.current) {
-          const staked = stakedResult.result?.readU256() ?? 0n;
-          const pendingRewards = pendingResult.result?.readU256() ?? 0n;
+          const staked = (stakedResult.properties as Record<string, bigint>)['balance'] ?? 0n;
+          const pendingRewards = (pendingResult.properties as Record<string, bigint>)['pending'] ?? 0n;
           console.log('[EggStaking] staked:', staked.toString(), 'pendingRewards:', pendingRewards.toString());
           setPosition({ staked, pendingRewards });
         }
@@ -90,7 +81,7 @@ export function useEggStaking(): EggStakingState {
     return (): void => {
       mountedRef.current = false;
     };
-  }, [provider, contracts.eggStaking, opnetAddress, blockHeight]);
+  }, [stakingContract, opnetAddress, blockHeight]);
 
   const checkAllowance = useCallback(
     async (): Promise<bigint> => {
@@ -128,8 +119,6 @@ export function useEggStaking(): EggStakingState {
         const methods = eggContract as unknown as ContractMethods;
         const spender = Address.fromString(contracts.eggStaking);
 
-        // Check current allowance to only increase by the needed amount
-        // (increaseAllowance is additive — calling with MAX would overflow)
         const currentAllowance = await checkAllowance();
         console.log('[EggStaking] approveEgg — stakeAmount:', stakeAmount.toString(), 'currentAllowance:', currentAllowance.toString());
 
@@ -190,7 +179,7 @@ export function useEggStaking(): EggStakingState {
 
   const simulateAndSendStake = useCallback(
     async (amount: bigint, afterApproval: boolean): Promise<TransactionState> => {
-      if (!address || !opnetAddress) {
+      if (!stakingContract || !address || !opnetAddress) {
         return { status: 'error', error: 'Wallet not connected' };
       }
 
@@ -200,16 +189,14 @@ export function useEggStaking(): EggStakingState {
         status: 'simulating',
         message: `${step} — Checking if the kitchen can cook your eggs.`,
       });
-      const networkConfig = getNetworkConfig(network);
 
-      const callResult = await callWrite(
-        provider,
-        contracts.eggStaking,
-        opnetAddress,
-        networkConfig.network,
-        'stake',
-        (w: BinaryWriter) => w.writeU256(amount),
-      );
+      const methods = stakingContract as unknown as ContractMethods;
+      const stakeMethod = methods['stake'];
+      if (!stakeMethod) {
+        return { status: 'error', error: 'stake method not found on contract' };
+      }
+
+      const callResult = await stakeMethod(amount);
 
       if (callResult.revert) {
         const errorState: TransactionState = {
@@ -225,9 +212,10 @@ export function useEggStaking(): EggStakingState {
         message: `${step} — Putting eggs on the stove. Confirm in your wallet.`,
       });
 
+      const networkConfig = getNetworkConfig(network);
       const result = await callResult.sendTransaction({
-          signer: null,
-          mldsaSigner: null,
+        signer: null,
+        mldsaSigner: null,
         linkMLDSAPublicKeyToAddress: false,
         refundTo: address,
         maximumAllowedSatToSpend: 1_000_000n,
@@ -245,7 +233,7 @@ export function useEggStaking(): EggStakingState {
       setTxState(confirmedState);
       return confirmedState;
     },
-    [address, opnetAddress, provider, contracts.eggStaking, network],
+    [stakingContract, address, opnetAddress, network],
   );
 
   const stake = useCallback(
@@ -254,37 +242,16 @@ export function useEggStaking(): EggStakingState {
         return { status: 'error', error: 'Wallet not connected' };
       }
 
-      // Debug: check wallet MLDSA status
-      console.log('[EggStaking] wallet address:', address);
-      console.log('[EggStaking] opnetAddress:', opnetAddress?.toString());
-      try {
-        const w = window as unknown as Record<string, unknown>;
-        const opnetObj = w['opnet'] as Record<string, unknown> | undefined;
-        if (opnetObj?.['web3']) {
-          const web3 = opnetObj['web3'] as Record<string, (...args: unknown[]) => Promise<unknown>>;
-          const mldsaKey = await web3['getMLDSAPublicKey']();
-          console.log('[EggStaking] wallet MLDSA public key:', mldsaKey);
-          const hashedKey = await web3['getHashedMLDSAKey']?.();
-          console.log('[EggStaking] wallet hashed MLDSA key:', hashedKey);
-        } else {
-          console.log('[EggStaking] window.opnet.web3 not found');
-        }
-      } catch (e) {
-        console.warn('[EggStaking] MLDSA key check failed:', e);
-      }
-
       // Optimistic: try to stake directly (works if allowance already exists)
       console.log('[EggStaking] stake — optimistic attempt with amount:', amount.toString());
       try {
         const optimisticResult = await simulateAndSendStake(amount, false);
-        // Check if it returned an error (revert path) vs threw
         if (optimisticResult.status === 'error') {
           const errMsg = optimisticResult.error ?? '';
           console.log('[EggStaking] stake — optimistic returned error:', errMsg);
           if (!errMsg.toLowerCase().includes('allowance')) {
             return optimisticResult;
           }
-          // Fall through to approval flow
         } else {
           return optimisticResult;
         }
@@ -292,7 +259,6 @@ export function useEggStaking(): EggStakingState {
         const msg = err instanceof Error ? err.message : '';
         console.log('[EggStaking] stake — optimistic threw:', msg);
         if (!msg.toLowerCase().includes('allowance')) {
-          // Not an allowance issue — real error
           const errorState: TransactionState = { status: 'error', error: msg || 'Stake failed' };
           setTxState(errorState);
           return errorState;
@@ -305,10 +271,9 @@ export function useEggStaking(): EggStakingState {
         return approvalResult;
       }
 
-      // Retry stake across up to 5 blocks until the approval lands
+      // Retry stake across up to 3 blocks until the approval lands
       const MAX_BLOCK_RETRIES = 3;
       for (let attempt = 0; attempt < MAX_BLOCK_RETRIES; attempt++) {
-        // Wait for next block
         setTxState({
           status: 'confirming',
           message: `Step 2 of 3 — Baking the permission slip into a Bitcoin block. This takes ~10 min. (attempt ${String(attempt + 1)}/${String(MAX_BLOCK_RETRIES)})`,
@@ -333,7 +298,6 @@ export function useEggStaking(): EggStakingState {
           console.warn('[EggStaking] block polling error:', pollErr);
         }
 
-        // Check allowance before attempting stake
         const currentAllowance = await checkAllowance();
         console.log(`[EggStaking] retry #${String(attempt + 1)} — allowance: ${currentAllowance.toString()}, need: ${amount.toString()}`);
 
@@ -342,17 +306,15 @@ export function useEggStaking(): EggStakingState {
           continue;
         }
 
-        // Allowance is enough — try stake
         try {
           const result = await simulateAndSendStake(amount, true);
-          // simulateAndSendStake may return an error state instead of throwing
           if (result.status === 'error') {
             const errMsg = result.error ?? '';
             console.log(`[EggStaking] retry #${String(attempt + 1)} — stake returned error: ${errMsg}`);
             if (errMsg.toLowerCase().includes('allowance')) {
-              continue; // still an allowance issue, keep retrying
+              continue;
             }
-            return result; // different error, stop
+            return result;
           }
           return result;
         } catch (retryErr: unknown) {
@@ -363,7 +325,6 @@ export function useEggStaking(): EggStakingState {
             setTxState(errorState);
             return errorState;
           }
-          // Still waiting for allowance — loop and wait for next block
         }
       }
 
@@ -379,22 +340,20 @@ export function useEggStaking(): EggStakingState {
 
   const unstake = useCallback(
     async (amount: bigint): Promise<TransactionState> => {
-      if (!address || !opnetAddress) {
+      if (!stakingContract || !address || !opnetAddress) {
         return { status: 'error', error: 'Wallet not connected' };
       }
 
       try {
         setTxState({ status: 'simulating' });
-        const networkConfig = getNetworkConfig(network);
 
-        const callResult = await callWrite(
-          provider,
-          contracts.eggStaking,
-          opnetAddress,
-          networkConfig.network,
-          'unstake',
-          (w: BinaryWriter) => w.writeU256(amount),
-        );
+        const methods = stakingContract as unknown as ContractMethods;
+        const unstakeMethod = methods['unstake'];
+        if (!unstakeMethod) {
+          return { status: 'error', error: 'unstake method not found on contract' };
+        }
+
+        const callResult = await unstakeMethod(amount);
 
         if (callResult.revert) {
           const errorState: TransactionState = {
@@ -407,6 +366,7 @@ export function useEggStaking(): EggStakingState {
 
         setTxState({ status: 'signing' });
 
+        const networkConfig = getNetworkConfig(network);
         const result = await callResult.sendTransaction({
           signer: null,
           mldsaSigner: null,
@@ -422,6 +382,7 @@ export function useEggStaking(): EggStakingState {
         const confirmedState: TransactionState = {
           status: 'confirmed',
           txId: result.transactionId,
+          message: 'Your $EGG is unstaked.',
         };
         setTxState(confirmedState);
         return confirmedState;
@@ -432,25 +393,24 @@ export function useEggStaking(): EggStakingState {
         return errorState;
       }
     },
-    [address, opnetAddress, provider, contracts.eggStaking, network],
+    [stakingContract, address, opnetAddress, network],
   );
 
   const claimRewards = useCallback(async (): Promise<TransactionState> => {
-    if (!address || !opnetAddress) {
+    if (!stakingContract || !address || !opnetAddress) {
       return { status: 'error', error: 'Wallet not connected' };
     }
 
     try {
       setTxState({ status: 'simulating' });
-      const networkConfig = getNetworkConfig(network);
 
-      const callResult = await callWrite(
-        provider,
-        contracts.eggStaking,
-        opnetAddress,
-        networkConfig.network,
-        'claimReward',
-      );
+      const methods = stakingContract as unknown as ContractMethods;
+      const claimMethod = methods['claimReward'];
+      if (!claimMethod) {
+        return { status: 'error', error: 'claimReward method not found on contract' };
+      }
+
+      const callResult = await claimMethod();
 
       if (callResult.revert) {
         const errorState: TransactionState = {
@@ -463,9 +423,10 @@ export function useEggStaking(): EggStakingState {
 
       setTxState({ status: 'signing' });
 
+      const networkConfig = getNetworkConfig(network);
       const result = await callResult.sendTransaction({
-          signer: null,
-          mldsaSigner: null,
+        signer: null,
+        mldsaSigner: null,
         linkMLDSAPublicKeyToAddress: false,
         refundTo: address,
         maximumAllowedSatToSpend: 1_000_000n,
@@ -478,6 +439,7 @@ export function useEggStaking(): EggStakingState {
       const confirmedState: TransactionState = {
         status: 'confirmed',
         txId: result.transactionId,
+        message: 'MOTO rewards claimed!',
       };
       setTxState(confirmedState);
       return confirmedState;
@@ -487,7 +449,7 @@ export function useEggStaking(): EggStakingState {
       setTxState(errorState);
       return errorState;
     }
-  }, [address, opnetAddress, provider, contracts.eggStaking, network]);
+  }, [stakingContract, address, opnetAddress, network]);
 
   if (isDemoMode()) return DEMO_EGG_STAKING;
 

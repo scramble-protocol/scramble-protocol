@@ -49,19 +49,18 @@ export function useSpatula(): SpatulaState {
       const methods = spatulaContract as unknown as ContractMethods;
 
       try {
-        if (methods['getHarvestInfo']) {
-          const infoResult = await methods['getHarvestInfo'](opnetAddress);
-          if (mountedRef.current && infoResult && !infoResult.revert) {
-            const props = infoResult.properties as Record<string, bigint>;
-            setHarvestInfo({
-              pendingAmount: props['pendingAmount'] ?? 0n,
-              bountyPercent: props['bountyPercent'] ?? 0n,
-              lastHarvestBlock: props['lastHarvestBlock'] ?? 0n,
-            });
-          }
+        const totalResult = await methods['totalDeposited']();
+        if (mountedRef.current && totalResult && !totalResult.revert) {
+          const props = totalResult.properties as Record<string, bigint>;
+          const totalDeposited = props['totalDeposited'] ?? 0n;
+          setHarvestInfo({
+            pendingAmount: totalDeposited,
+            bountyPercent: 50n, // 0.5% fixed bounty (basis points)
+            lastHarvestBlock: 0n,
+          });
         }
-      } catch {
-        // Contract calls may fail with placeholder ABIs
+      } catch (err) {
+        console.error('[Spatula] fetchData error:', err);
       }
 
       if (mountedRef.current) {

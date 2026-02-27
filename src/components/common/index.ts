@@ -19,6 +19,9 @@ export type { SpinnerProps } from './Spinner.js';
 export { Badge } from './Badge.js';
 export type { BadgeProps } from './Badge.js';
 
+export { CookingProgress } from './CookingProgress.js';
+export type { CookingProgressProps, CookingStep } from './CookingProgress.js';
+
 export { TransactionStatus } from './TransactionStatus.js';
 export type { TransactionStatusProps } from './TransactionStatus.js';
 

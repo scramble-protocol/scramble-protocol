@@ -1,145 +1,15 @@
 import React from 'react';
-import type { TransactionStatus as TxStatus } from '../types/index.js';
 import { PageLayout } from '../components/layout/index.js';
 import { useFreeMint } from '../hooks/index.js';
 import { useWallet } from '../hooks/index.js';
-import { Card } from '../components/common/index.js';
-import { Button } from '../components/common/index.js';
-import { Spinner } from '../components/common/index.js';
-import { ProgressBar } from '../components/common/index.js';
-import { OnThePan } from '../components/common/index.js';
-import { cn } from '@/lib/utils.js';
+import { Card, Button, Spinner, ProgressBar, OnThePan, CookingProgress, type CookingStep } from '../components/common/index.js';
 
-// Cooking steps for the progress tracker
-
-interface CookingStep {
-  readonly id: TxStatus;
-  readonly label: string;
-  readonly description: string;
-}
-
-const COOKING_STEPS: readonly CookingStep[] = [
+const MINT_STEPS: readonly CookingStep[] = [
   { id: 'simulating', label: 'Prepping', description: 'Checking the pantry...' },
   { id: 'signing', label: 'Cracking', description: 'Crack that egg! Confirm in your wallet.' },
   { id: 'broadcasting', label: 'Cooking', description: 'Your order is on the grill. Hang tight!' },
   { id: 'confirmed', label: 'Served', description: '1,000 $EGG, hot off the pan!' },
 ];
-
-function getStepIndex(status: TxStatus): number {
-  return COOKING_STEPS.findIndex((s) => s.id === status);
-}
-
-function truncateTxId(txId: string): string {
-  if (txId.length <= 16) return txId;
-  return `${txId.slice(0, 8)}...${txId.slice(-8)}`;
-}
-
-// Cooking Progress Tracker
-
-function CookingProgress({
-  status,
-  txId,
-  error,
-}: {
-  readonly status: TxStatus;
-  readonly txId?: string;
-  readonly error?: string;
-}): React.ReactElement | null {
-  if (status === 'idle') return null;
-
-  if (status === 'error') {
-    return (
-      <Card>
-        <div className="flex items-center gap-3 text-destructive">
-          <span className="text-xl">&#x2715;</span>
-          <p className="text-sm">{error ?? 'Something went wrong in the kitchen.'}</p>
-        </div>
-      </Card>
-    );
-  }
-
-  const activeIdx = getStepIndex(status);
-  const isConfirmed = status === 'confirmed';
-  const progressPercent = isConfirmed
-    ? 100
-    : activeIdx >= 0
-      ? ((activeIdx + 0.5) / COOKING_STEPS.length) * 100
-      : 0;
-
-  return (
-    <Card>
-      <div className="flex flex-col gap-4">
-        {/* Progress bar */}
-        <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
-          <div
-            className={cn(
-              'h-full transition-all duration-500',
-              isConfirmed ? 'bg-green-500' : 'bg-primary'
-            )}
-            style={{ width: `${String(progressPercent)}%` }}
-          />
-        </div>
-
-        {/* Steps */}
-        <div className="flex flex-col gap-3">
-          {COOKING_STEPS.map((step, i) => {
-            const isDone = activeIdx > i || isConfirmed;
-            const isActive = activeIdx === i && !isConfirmed;
-
-            return (
-              <div
-                key={step.id}
-                className={cn(
-                  'flex items-center gap-3 rounded-md p-2 transition-colors',
-                  isDone && 'bg-green-500/10',
-                  isActive && 'bg-primary/10'
-                )}
-              >
-                <div className="flex size-7 shrink-0 items-center justify-center rounded-full border border-border text-xs">
-                  {isDone ? (
-                    <span className="text-green-500">&#x2713;</span>
-                  ) : isActive ? (
-                    <Spinner size="sm" />
-                  ) : (
-                    <span className="text-muted-foreground">{String(i + 1)}</span>
-                  )}
-                </div>
-                <div className="flex flex-col">
-                  <span className={cn(
-                    'text-sm font-medium',
-                    isDone ? 'text-green-400' : isActive ? 'text-primary' : 'text-muted-foreground'
-                  )}>
-                    {step.label}
-                  </span>
-                  {(isActive || isDone) && (
-                    <span className="text-xs text-muted-foreground">{step.description}</span>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Confirmed message */}
-        {isConfirmed && txId !== undefined && (
-          <div className="rounded-md border border-green-500/30 bg-green-500/10 p-3 text-center">
-            <p className="text-sm text-green-400">
-              Your eggs have been served. Welcome to the kitchen!
-            </p>
-            <a
-              className="mt-1 inline-block text-xs text-primary hover:underline"
-              href={`https://testnet.opnet.org/tx/${txId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View receipt: {truncateTxId(txId)}
-            </a>
-          </div>
-        )}
-      </div>
-    </Card>
-  );
-}
 
 // Claim Card
 
@@ -264,6 +134,9 @@ function MintPage(): React.ReactElement {
           status={txState.status}
           txId={txState.txId}
           error={txState.error}
+          message={txState.message}
+          steps={MINT_STEPS}
+          successMessage="Your eggs have been served. Welcome to the kitchen!"
         />
         <OnThePan txState={txState} />
         <MintProgress

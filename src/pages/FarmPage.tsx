@@ -2,8 +2,18 @@ import React, { useState, useCallback } from 'react';
 import type { FarmPosition } from '../types/index.js';
 import { PageLayout } from '../components/layout/index.js';
 import { useLPMining, useWallet, useBlockHeight } from '../hooks/index.js';
-import { Card, Button, Input, Spinner, TransactionStatus } from '../components/common/index.js';
+import { Card, Button, Input, Spinner, CookingProgress, OnThePan, type CookingStep } from '../components/common/index.js';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/8bit/tabs.js';
 import { FormatService } from '../services/FormatService.js';
+
+const FARM_STEPS: readonly CookingStep[] = [
+  { id: 'approving', label: 'Measuring', description: 'Measuring ingredients... Confirm approval in your wallet.' },
+  { id: 'confirming', label: 'Resting', description: 'Waiting for approval to bake into a Bitcoin block...' },
+  { id: 'simulating', label: 'Prepping', description: 'Checking the pantry...' },
+  { id: 'signing', label: 'Mixing', description: 'Mix it up! Confirm in your wallet.' },
+  { id: 'broadcasting', label: 'Baking', description: 'Your LP tokens are in the oven!' },
+  { id: 'confirmed', label: 'Ready', description: 'LP tokens staked. $EGG rewards cooking!' },
+];
 
 const TOKEN_DECIMALS = 18;
 
@@ -40,101 +50,107 @@ function EmissionChart({
   );
 }
 
-function LPStake({
-  onStakeLP,
-  isLoading,
-}: {
-  readonly onStakeLP: (amount: bigint) => void;
-  readonly isLoading: boolean;
-}): React.ReactElement {
-  const [amount, setAmount] = useState<string>('');
-
-  const handleStake = useCallback((): void => {
-    const parsed = FormatService.parseTokenAmount(amount, TOKEN_DECIMALS);
-    if (parsed > 0n) {
-      onStakeLP(parsed);
-      setAmount('');
-    }
-  }, [amount, onStakeLP]);
-
-  return (
-    <Card title="Stake $EGG-MOTO LP" subtitle="Stake $EGG-MOTO LP tokens to earn $EGG rewards over ~52,560 blocks (~12 months)">
-      <div className="flex flex-col gap-4">
-        <Input
-          label="LP Amount"
-          value={amount}
-          onChange={setAmount}
-          placeholder="0.00"
-          suffix="LP"
-          type="text"
-        />
-        <Button
-          onClick={handleStake}
-          disabled={isLoading || amount === ''}
-          loading={isLoading}
-          fullWidth
-        >
-          Stake LP
-        </Button>
-      </div>
-    </Card>
-  );
-}
-
-function LPUnstake({
+function StakeUnstakeTabs({
   position,
+  onStakeLP,
   onUnstakeLP,
   isLoading,
 }: {
   readonly position: FarmPosition | null;
+  readonly onStakeLP: (amount: bigint) => void;
   readonly onUnstakeLP: (amount: bigint) => void;
   readonly isLoading: boolean;
 }): React.ReactElement {
-  const [amount, setAmount] = useState<string>('');
+  const [stakeAmount, setStakeAmount] = useState<string>('');
+  const [unstakeAmount, setUnstakeAmount] = useState<string>('');
+
+  const handleStake = useCallback((): void => {
+    const parsed = FormatService.parseTokenAmount(stakeAmount, TOKEN_DECIMALS);
+    if (parsed > 0n) {
+      onStakeLP(parsed);
+      setStakeAmount('');
+    }
+  }, [stakeAmount, onStakeLP]);
 
   const handleUnstake = useCallback((): void => {
-    const parsed = FormatService.parseTokenAmount(amount, TOKEN_DECIMALS);
+    const parsed = FormatService.parseTokenAmount(unstakeAmount, TOKEN_DECIMALS);
     if (parsed > 0n) {
       onUnstakeLP(parsed);
-      setAmount('');
+      setUnstakeAmount('');
     }
-  }, [amount, onUnstakeLP]);
+  }, [unstakeAmount, onUnstakeLP]);
 
-  const handleMax = useCallback((): void => {
+  const handleUnstakeMax = useCallback((): void => {
     if (position !== null) {
-      setAmount(FormatService.formatTokenAmount(position.staked, TOKEN_DECIMALS));
+      setUnstakeAmount(FormatService.formatTokenAmount(position.staked, TOKEN_DECIMALS));
     }
   }, [position]);
 
   return (
-    <Card title="Unstake $EGG-MOTO LP" subtitle="Remove your staked LP tokens">
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Currently Staked</span>
-          <span className="font-medium text-foreground">
-            {FormatService.formatBigIntWithDecimals(position?.staked ?? 0n, TOKEN_DECIMALS, 4)} LP
-          </span>
-        </div>
-        <Input
-          label="LP Amount"
-          value={amount}
-          onChange={setAmount}
-          placeholder="0.00"
-          suffix="LP"
-          maxButton
-          onMax={handleMax}
-          type="text"
-        />
-        <Button
-          onClick={handleUnstake}
-          disabled={isLoading || amount === ''}
-          loading={isLoading}
-          variant="secondary"
-          fullWidth
-        >
-          Unstake LP
-        </Button>
-      </div>
+    <Card>
+      <Tabs defaultValue="stake" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="stake">Stake LP</TabsTrigger>
+          <TabsTrigger value="unstake">Unstake LP</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="stake">
+          <div className="flex flex-col gap-4 pt-4">
+            <p className="text-xs text-muted-foreground">
+              Stake $EGG-MOTO LP tokens to earn $EGG rewards over ~52,560 blocks (~12 months).
+            </p>
+            <Input
+              label="LP Amount"
+              value={stakeAmount}
+              onChange={setStakeAmount}
+              placeholder="0.00"
+              suffix="LP"
+              type="text"
+            />
+            <Button
+              onClick={handleStake}
+              disabled={isLoading || stakeAmount === ''}
+              loading={isLoading}
+              fullWidth
+            >
+              Stake LP
+            </Button>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="unstake">
+          <div className="flex flex-col gap-4 pt-4">
+            <p className="text-xs text-muted-foreground">
+              Remove your staked LP tokens.
+            </p>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Currently Staked</span>
+              <span className="font-medium text-foreground">
+                {FormatService.formatBigIntWithDecimals(position?.staked ?? 0n, TOKEN_DECIMALS, 4)} LP
+              </span>
+            </div>
+            <Input
+              label="LP Amount"
+              value={unstakeAmount}
+              onChange={setUnstakeAmount}
+              placeholder="0.00"
+              suffix="LP"
+              maxButton
+              onMax={handleUnstakeMax}
+              type="text"
+            />
+            <Button
+              onClick={handleUnstake}
+              disabled={isLoading || unstakeAmount === ''}
+              loading={isLoading}
+              variant="secondary"
+              fullWidth
+            >
+              Unstake LP
+            </Button>
+          </div>
+        </TabsContent>
+      </Tabs>
     </Card>
   );
 }
@@ -230,24 +246,28 @@ function FarmPage(): React.ReactElement {
           blockHeight={blockHeight}
           isLoading={farming.isLoading}
         />
-        <div className="grid gap-6 lg:grid-cols-2">
-          <div className="flex flex-col gap-6">
-            <LPStake onStakeLP={handleStakeLP} isLoading={farming.isLoading} />
-            <LPUnstake
-              position={farming.position}
-              onUnstakeLP={handleUnstakeLP}
-              isLoading={farming.isLoading}
-            />
-          </div>
-          <div className="flex flex-col gap-6">
-            <FarmRewards
-              pendingEgg={farming.position?.pendingEgg ?? 0n}
-              onClaim={handleClaimRewards}
-              isLoading={farming.isLoading}
-            />
-          </div>
+        <div className="mx-auto w-full max-w-lg flex flex-col gap-6">
+          <StakeUnstakeTabs
+            position={farming.position}
+            onStakeLP={handleStakeLP}
+            onUnstakeLP={handleUnstakeLP}
+            isLoading={farming.isLoading}
+          />
+          <FarmRewards
+            pendingEgg={farming.position?.pendingEgg ?? 0n}
+            onClaim={handleClaimRewards}
+            isLoading={farming.isLoading}
+          />
         </div>
-        <TransactionStatus state={farming.txState} />
+        <CookingProgress
+          status={farming.txState.status}
+          txId={farming.txState.txId}
+          error={farming.txState.error}
+          message={farming.txState.message}
+          steps={FARM_STEPS}
+          successMessage="LP tokens staked. $EGG rewards are cooking!"
+        />
+        <OnThePan txState={farming.txState} />
       </div>
     </PageLayout>
   );

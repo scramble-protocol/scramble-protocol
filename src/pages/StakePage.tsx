@@ -2,8 +2,18 @@ import React, { useState, useCallback } from 'react';
 import type { StakingPosition } from '../types/index.js';
 import { PageLayout } from '../components/layout/index.js';
 import { useEggStaking, useEggToken, useWallet } from '../hooks/index.js';
-import { Card, Button, Input, Spinner, TransactionStatus, OnThePan } from '../components/common/index.js';
+import { Card, Button, Input, Spinner, CookingProgress, OnThePan, type CookingStep } from '../components/common/index.js';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/8bit/tabs.js';
 import { FormatService } from '../services/FormatService.js';
+
+const STAKING_STEPS: readonly CookingStep[] = [
+  { id: 'approving', label: 'Seasoning', description: 'Seasoning the pan... Confirm approval in your wallet.' },
+  { id: 'confirming', label: 'Baking', description: 'Waiting for approval to bake into a Bitcoin block...' },
+  { id: 'simulating', label: 'Preheating', description: 'Checking the temperature...' },
+  { id: 'signing', label: 'Cracking', description: 'Crack that egg! Confirm in your wallet.' },
+  { id: 'broadcasting', label: 'Scrambling', description: 'Your eggs are scrambling...' },
+  { id: 'confirmed', label: 'Scrambled', description: '$EGG staked. MOTO rewards incoming!' },
+];
 
 const TOKEN_DECIMALS = 18;
 
@@ -38,115 +48,121 @@ function StakingStats({
   );
 }
 
-function StakeForm({
+function StakeUnstakeTabs({
   eggBalance,
-  onStake,
-  isLoading,
-}: {
-  readonly eggBalance: bigint;
-  readonly onStake: (amount: bigint) => void;
-  readonly isLoading: boolean;
-}): React.ReactElement {
-  const [amount, setAmount] = useState<string>('');
-
-  const handleStake = useCallback((): void => {
-    const parsed = FormatService.parseTokenAmount(amount, TOKEN_DECIMALS);
-    if (parsed > 0n) {
-      onStake(parsed);
-      setAmount('');
-    }
-  }, [amount, onStake]);
-
-  const handleMax = useCallback((): void => {
-    setAmount(FormatService.formatTokenAmount(eggBalance, TOKEN_DECIMALS));
-  }, [eggBalance]);
-
-  return (
-    <Card title="Stake $EGG" subtitle="Stake $EGG to earn 5% of all Spatula harvests. Rewards are paid in MOTO.">
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Available</span>
-          <span className="font-medium text-foreground">
-            {FormatService.formatBigIntWithDecimals(eggBalance, TOKEN_DECIMALS, 4)} EGG
-          </span>
-        </div>
-        <Input
-          label="Amount to Stake"
-          value={amount}
-          onChange={setAmount}
-          placeholder="0.00"
-          suffix="EGG"
-          maxButton
-          onMax={handleMax}
-          type="text"
-        />
-        <Button
-          onClick={handleStake}
-          disabled={isLoading || amount === ''}
-          loading={isLoading}
-          fullWidth
-        >
-          Stake
-        </Button>
-      </div>
-    </Card>
-  );
-}
-
-function UnstakeForm({
   position,
+  onStake,
   onUnstake,
   isLoading,
 }: {
+  readonly eggBalance: bigint;
   readonly position: StakingPosition | null;
+  readonly onStake: (amount: bigint) => void;
   readonly onUnstake: (amount: bigint) => void;
   readonly isLoading: boolean;
 }): React.ReactElement {
-  const [amount, setAmount] = useState<string>('');
+  const [stakeAmount, setStakeAmount] = useState<string>('');
+  const [unstakeAmount, setUnstakeAmount] = useState<string>('');
+
+  const handleStake = useCallback((): void => {
+    const parsed = FormatService.parseTokenAmount(stakeAmount, TOKEN_DECIMALS);
+    if (parsed > 0n) {
+      onStake(parsed);
+      setStakeAmount('');
+    }
+  }, [stakeAmount, onStake]);
 
   const handleUnstake = useCallback((): void => {
-    const parsed = FormatService.parseTokenAmount(amount, TOKEN_DECIMALS);
+    const parsed = FormatService.parseTokenAmount(unstakeAmount, TOKEN_DECIMALS);
     if (parsed > 0n) {
       onUnstake(parsed);
-      setAmount('');
+      setUnstakeAmount('');
     }
-  }, [amount, onUnstake]);
+  }, [unstakeAmount, onUnstake]);
 
-  const handleMax = useCallback((): void => {
+  const handleStakeMax = useCallback((): void => {
+    setStakeAmount(FormatService.formatTokenAmount(eggBalance, TOKEN_DECIMALS));
+  }, [eggBalance]);
+
+  const handleUnstakeMax = useCallback((): void => {
     if (position !== null) {
-      setAmount(FormatService.formatTokenAmount(position.staked, TOKEN_DECIMALS));
+      setUnstakeAmount(FormatService.formatTokenAmount(position.staked, TOKEN_DECIMALS));
     }
   }, [position]);
 
   return (
-    <Card title="Unstake" subtitle="Unstake anytime — no lock-up period">
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Currently Staked</span>
-          <span className="font-medium text-foreground">
-            {FormatService.formatBigIntWithDecimals(position?.staked ?? 0n, TOKEN_DECIMALS, 4)} EGG
-          </span>
-        </div>
-        <Input
-          label="Amount to Unstake"
-          value={amount}
-          onChange={setAmount}
-          placeholder="0.00"
-          suffix="EGG"
-          maxButton
-          onMax={handleMax}
-          type="text"
-        />
-        <Button
-          onClick={handleUnstake}
-          disabled={isLoading || amount === ''}
-          loading={isLoading}
-          variant="secondary"
-          fullWidth
-        >
-          Unstake
-        </Button>
-      </div>
+    <Card>
+      <Tabs defaultValue="stake" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="stake">Stake</TabsTrigger>
+          <TabsTrigger value="unstake">Unstake</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="stake">
+          <div className="flex flex-col gap-4 pt-4">
+            <p className="text-xs text-muted-foreground">
+              Stake $EGG to earn 5% of all Spatula harvests. Rewards are paid in MOTO.
+            </p>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Available</span>
+              <span className="font-medium text-foreground">
+                {FormatService.formatBigIntWithDecimals(eggBalance, TOKEN_DECIMALS, 4)} EGG
+              </span>
+            </div>
+            <Input
+              label="Amount to Stake"
+              value={stakeAmount}
+              onChange={setStakeAmount}
+              placeholder="0.00"
+              suffix="EGG"
+              maxButton
+              onMax={handleStakeMax}
+              type="text"
+            />
+            <Button
+              onClick={handleStake}
+              disabled={isLoading || stakeAmount === ''}
+              loading={isLoading}
+              fullWidth
+            >
+              Stake
+            </Button>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="unstake">
+          <div className="flex flex-col gap-4 pt-4">
+            <p className="text-xs text-muted-foreground">
+              Unstake anytime — no lock-up period.
+            </p>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Currently Staked</span>
+              <span className="font-medium text-foreground">
+                {FormatService.formatBigIntWithDecimals(position?.staked ?? 0n, TOKEN_DECIMALS, 4)} EGG
+              </span>
+            </div>
+            <Input
+              label="Amount to Unstake"
+              value={unstakeAmount}
+              onChange={setUnstakeAmount}
+              placeholder="0.00"
+              suffix="EGG"
+              maxButton
+              onMax={handleUnstakeMax}
+              type="text"
+            />
+            <Button
+              onClick={handleUnstake}
+              disabled={isLoading || unstakeAmount === ''}
+              loading={isLoading}
+              variant="secondary"
+              fullWidth
+            >
+              Unstake
+            </Button>
+          </div>
+        </TabsContent>
+      </Tabs>
     </Card>
   );
 }
@@ -242,28 +258,28 @@ function StakePage(): React.ReactElement {
           eggBalance={egg.balance}
           isLoading={staking.isLoading || egg.isLoading}
         />
-        <div className="grid gap-6 lg:grid-cols-2">
-          <div className="flex flex-col gap-6">
-            <StakeForm
-              eggBalance={egg.balance}
-              onStake={handleStake}
-              isLoading={staking.isLoading}
-            />
-            <UnstakeForm
-              position={staking.position}
-              onUnstake={handleUnstake}
-              isLoading={staking.isLoading}
-            />
-          </div>
-          <div className="flex flex-col gap-6">
-            <StakingRewards
-              pendingRewards={staking.position?.pendingRewards ?? 0n}
-              onClaim={handleClaimRewards}
-              isLoading={staking.isLoading}
-            />
-          </div>
+        <div className="mx-auto w-full max-w-lg flex flex-col gap-6">
+          <StakeUnstakeTabs
+            eggBalance={egg.balance}
+            position={staking.position}
+            onStake={handleStake}
+            onUnstake={handleUnstake}
+            isLoading={staking.isLoading}
+          />
+          <StakingRewards
+            pendingRewards={staking.position?.pendingRewards ?? 0n}
+            onClaim={handleClaimRewards}
+            isLoading={staking.isLoading}
+          />
         </div>
-        <TransactionStatus state={staking.txState} />
+        <CookingProgress
+          status={staking.txState.status}
+          txId={staking.txState.txId}
+          error={staking.txState.error}
+          message={staking.txState.message}
+          steps={STAKING_STEPS}
+          successMessage="Your $EGG is staked. MOTO rewards are cooking!"
+        />
         <OnThePan txState={staking.txState} />
       </div>
     </PageLayout>

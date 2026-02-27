@@ -1,8 +1,49 @@
-import type { BitcoinInterfaceAbi } from 'opnet';
+import { ABIDataTypes, BitcoinAbiTypes, type BitcoinInterfaceAbi } from 'opnet';
 
-// EggStaking uses raw contract calls via RawContractService
-// because the deployed contract uses @method() without @params decorators,
-// producing selectors like SHA256("stake()") instead of SHA256("stake(uint256)").
-// The standard getContract ABI approach computes wrong selectors.
-// See src/services/RawContractService.ts and src/hooks/useEggStaking.ts.
-export const EGG_STAKING_ABI: BitcoinInterfaceAbi = [] as const;
+export const EGG_STAKING_ABI: BitcoinInterfaceAbi = [
+  {
+    name: 'stake',
+    type: BitcoinAbiTypes.Function,
+    inputs: [{ name: 'amount', type: ABIDataTypes.UINT256 }],
+    outputs: [{ name: 'success', type: ABIDataTypes.BOOL }],
+  },
+  {
+    name: 'unstake',
+    type: BitcoinAbiTypes.Function,
+    inputs: [{ name: 'amount', type: ABIDataTypes.UINT256 }],
+    outputs: [{ name: 'success', type: ABIDataTypes.BOOL }],
+  },
+  {
+    name: 'claimReward',
+    type: BitcoinAbiTypes.Function,
+    inputs: [],
+    outputs: [{ name: 'amount', type: ABIDataTypes.UINT256 }],
+  },
+  {
+    name: 'notifyReward',
+    type: BitcoinAbiTypes.Function,
+    inputs: [{ name: 'amount', type: ABIDataTypes.UINT256 }],
+    outputs: [{ name: 'success', type: ABIDataTypes.BOOL }],
+  },
+  {
+    name: 'totalStaked',
+    type: BitcoinAbiTypes.Function,
+    constant: true,
+    inputs: [],
+    outputs: [{ name: 'totalStaked', type: ABIDataTypes.UINT256 }],
+  },
+  {
+    name: 'pendingReward',
+    type: BitcoinAbiTypes.Function,
+    constant: true,
+    inputs: [{ name: 'user', type: ABIDataTypes.ADDRESS }],
+    outputs: [{ name: 'pending', type: ABIDataTypes.UINT256 }],
+  },
+  {
+    name: 'stakedBalance',
+    type: BitcoinAbiTypes.Function,
+    constant: true,
+    inputs: [{ name: 'user', type: ABIDataTypes.ADDRESS }],
+    outputs: [{ name: 'balance', type: ABIDataTypes.UINT256 }],
+  },
+];

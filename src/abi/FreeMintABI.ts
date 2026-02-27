@@ -1,5 +1,17 @@
-import type { BitcoinInterfaceAbi } from 'opnet';
+import { ABIDataTypes, BitcoinAbiTypes, type BitcoinInterfaceAbi } from 'opnet';
 
-// Placeholder ABI - will be replaced when contract is compiled
-// Methods: claim, getMintStatus, canClaim
-export const FREE_MINT_ABI: BitcoinInterfaceAbi = [] as const;
+export const FREE_MINT_ABI: BitcoinInterfaceAbi = [
+  {
+    name: 'claim',
+    type: BitcoinAbiTypes.Function,
+    inputs: [],
+    outputs: [{ name: 'success', type: ABIDataTypes.BOOL }],
+  },
+  {
+    name: 'remaining',
+    type: BitcoinAbiTypes.Function,
+    constant: true,
+    inputs: [],
+    outputs: [{ name: 'remaining', type: ABIDataTypes.UINT256 }],
+  },
+];
