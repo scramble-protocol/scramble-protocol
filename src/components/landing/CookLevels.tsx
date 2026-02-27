@@ -30,7 +30,7 @@ function CookLevels(): React.ReactElement {
         <h2 className="font-retro text-sm text-center text-primary mb-10">
           Cook Levels &mdash; The Longer, The Better
         </h2>
-        <div className="grid grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {LEVELS.map((lv: CookLevel): React.ReactElement => (
             <Card
               key={lv.name}
