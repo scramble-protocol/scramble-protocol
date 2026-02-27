@@ -347,6 +347,36 @@ function VaultPage(): React.ReactElement {
     void pan.withdrawEggBoost();
   }, [pan]);
 
+  // Flip to true when The Pan is ready to launch
+  const PAN_LIVE = false;
+
+  if (!PAN_LIVE) {
+    return (
+      <PageLayout title="The Pan">
+        <div className="flex flex-col items-center justify-center py-16">
+          <div className="w-full max-w-lg">
+            <Card title="The Pan — Coming Soon">
+              <div className="flex flex-col gap-4">
+                <p className="text-sm text-muted-foreground">
+                  The Pan is the heart of Scramble. Deposit MOTO tokens into the vault to receive Shell Tokens — your proportional share of everything in the kitchen.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Your MOTO is automatically farmed for yield via The Spatula. Early withdrawals are penalised with The Yoke Tax, and those fees are redistributed to loyal holders through The Sizzle drip. The longer you stay, the higher your Cook Level climbs — from Raw Egg all the way to Fully Scrambled (2x rewards).
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Lock $EGG alongside your deposit for an extra +0.25x boost.
+                </p>
+                <div className="rounded-md border border-primary/30 bg-primary/5 p-3 text-center">
+                  <p className="font-retro text-xs text-primary">Launching Soon</p>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </PageLayout>
+    );
+  }
+
   if (!isConnected) {
     return (
       <PageLayout title="The Pan">

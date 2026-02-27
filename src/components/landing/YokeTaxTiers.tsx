@@ -17,8 +17,8 @@ const RATE_COLORS: Record<string, string> = {
 
 const TIERS: readonly TaxTier[] = [
   { rate: '30%', blocks: 'Cracked: Under 1,008 blocks (~7 days)', severity: 'high', emoji: '\u{1F95A}' },
-  { rate: '20%', blocks: 'Runny: 1,008\u20134,320 blocks (~7\u201330 days)', severity: 'medium-high', emoji: '\u{1F373}' },
-  { rate: '10%', blocks: 'Scrambled: 4,320\u201325,920 blocks (~30 days\u20136 months)', severity: 'medium', emoji: '\u{1F959}' },
+  { rate: '20%', blocks: 'Runny: 1,008\u20134,320 blocks (~7\u201330 days)', severity: 'medium-high', emoji: '\u{1FAE0}' },
+  { rate: '10%', blocks: 'Scrambled: 4,320\u201325,920 blocks (~30 days\u20136 months)', severity: 'medium', emoji: '\u{1F373}' },
   { rate: '5%', blocks: 'Golden Egg: 25,920+ blocks (~6+ months)', severity: 'low', emoji: '\u{1F31F}' },
 ] as const;
 

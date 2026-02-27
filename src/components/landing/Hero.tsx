@@ -40,7 +40,7 @@ function Hero({ parallaxRef }: HeroProps): React.ReactElement {
           <BitButton variant="default" size="lg" asChild>
             <Link to="/vault">Start Cooking</Link>
           </BitButton>
-          <BitButton variant="outline" size="lg" asChild>
+          <BitButton variant="outline" size="lg" asChild className="animate-shake">
             <Link to="/mint">Free Mint</Link>
           </BitButton>
         </div>
