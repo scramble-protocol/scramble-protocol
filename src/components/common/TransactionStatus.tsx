@@ -58,7 +58,7 @@ function TransactionStatusComponent({
           {txId !== undefined && (
             <a
               className="text-xs text-primary hover:underline"
-              href={`https://explorer.opnet.org/tx/${txId}`}
+              href={`https://opscan.org/transactions/${txId}?network=op_testnet`}
               target="_blank"
               rel="noopener noreferrer"
             >

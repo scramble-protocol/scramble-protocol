@@ -140,7 +140,7 @@ function CookingProgress({
             <p className="text-sm text-green-400">{message ?? successMessage}</p>
             <a
               className="mt-1 inline-block text-xs text-primary hover:underline"
-              href={`https://testnet.opnet.org/tx/${txId}`}
+              href={`https://opscan.org/transactions/${txId}?network=op_testnet`}
               target="_blank"
               rel="noopener noreferrer"
             >

@@ -11,7 +11,7 @@ const NETWORK_CONFIGS: Map<string, NetworkConfig> = new Map([
     'regtest',
     {
       rpcUrl: 'https://regtest.opnet.org',
-      explorerUrl: 'https://explorer.opnet.org',
+      explorerUrl: 'https://opscan.org',
       network: networks.regtest,
     },
   ],
@@ -19,7 +19,7 @@ const NETWORK_CONFIGS: Map<string, NetworkConfig> = new Map([
     'testnet',
     {
       rpcUrl: 'https://testnet.opnet.org',
-      explorerUrl: 'https://testnet.opnet.org',
+      explorerUrl: 'https://opscan.org',
       network: networks.opnetTestnet,
     },
   ],
@@ -27,7 +27,7 @@ const NETWORK_CONFIGS: Map<string, NetworkConfig> = new Map([
     'mainnet',
     {
       rpcUrl: 'https://api.opnet.org',
-      explorerUrl: 'https://explorer.opnet.org',
+      explorerUrl: 'https://opscan.org',
       network: networks.bitcoin,
     },
   ],
