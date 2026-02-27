@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 import type { TransactionStatus as TxStatus } from '../../types/index.js';
 import { Card } from './Card.js';
 import { Spinner } from './Spinner.js';
+import { PixelEmoji } from './PixelEmoji.js';
 import { cn } from '@/lib/utils.js';
 
 // ─── Types ───────────────────────────────────────────────────
@@ -47,11 +48,17 @@ function CookingProgress({
   if (status === 'idle') return null;
 
   if (status === 'error') {
+    const errorMsg = error ?? 'Something went wrong in the kitchen.';
+    const emojiMatch = errorMsg.match(/(\p{Emoji_Presentation})/u);
+    const emoji = emojiMatch?.[1];
+    const textOnly = emoji ? errorMsg.replace(emoji, '').trim() : errorMsg;
+
     return (
       <Card>
         <div className="flex items-center gap-3 text-destructive">
           <span className="text-xl">&#x2715;</span>
-          <p className="text-sm">{error ?? 'Something went wrong in the kitchen.'}</p>
+          <p className="text-sm">{textOnly}</p>
+          {emoji && <PixelEmoji emoji={emoji} size={28} />}
         </div>
       </Card>
     );

@@ -109,9 +109,12 @@ export function useFreeMint(): FreeMintState {
 
       if (callResult.revert) {
         const revertMsg = callResult.revert.toString();
+        const friendly = revertMsg.toLowerCase().includes('already claimed')
+          ? "You already claimed your free mint, don't be greedy! 🐷"
+          : revertMsg;
         const errorState: TransactionState = {
           status: 'error',
-          error: revertMsg,
+          error: friendly,
         };
         setTxState(errorState);
 
@@ -156,8 +159,11 @@ export function useFreeMint(): FreeMintState {
       setTxState(confirmedState);
       return confirmedState;
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Claim transaction failed';
-      const errorState: TransactionState = { status: 'error', error: message };
+      const raw = err instanceof Error ? err.message : 'Claim transaction failed';
+      const friendly = raw.toLowerCase().includes('already claimed')
+        ? "You already claimed your free mint, don't be greedy! 🐷"
+        : raw;
+      const errorState: TransactionState = { status: 'error', error: friendly };
       setTxState(errorState);
       return errorState;
     }
